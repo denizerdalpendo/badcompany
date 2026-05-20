@@ -94,7 +94,18 @@ const Billing = () => {
             <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Upgrade Plan</h2>
             <div className="flex items-center space-x-2 bg-slate-100 dark:bg-slate-700 p-1 rounded-lg">
               <button
-                onClick={() => setBillingCycle('monthly')}
+                onClick={() => {
+                  const previousCycle = billingCycle;
+                  setBillingCycle('monthly');
+                  if (previousCycle !== 'monthly' && typeof pendo !== 'undefined') {
+                    const currentPlan = plans.find(p => p.current);
+                    pendo.track('billing_cycle_changed', {
+                      previousCycle: previousCycle,
+                      newCycle: 'monthly',
+                      currentPlan: currentPlan ? currentPlan.name : 'unknown'
+                    });
+                  }
+                }}
                 className={`px-4 py-2 rounded-md text-sm font-medium ${
                   billingCycle === 'monthly'
                     ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100'
@@ -104,7 +115,18 @@ const Billing = () => {
                 Monthly
               </button>
               <button
-                onClick={() => setBillingCycle('yearly')}
+                onClick={() => {
+                  const previousCycle = billingCycle;
+                  setBillingCycle('yearly');
+                  if (previousCycle !== 'yearly' && typeof pendo !== 'undefined') {
+                    const currentPlan = plans.find(p => p.current);
+                    pendo.track('billing_cycle_changed', {
+                      previousCycle: previousCycle,
+                      newCycle: 'yearly',
+                      currentPlan: currentPlan ? currentPlan.name : 'unknown'
+                    });
+                  }
+                }}
                 className={`px-4 py-2 rounded-md text-sm font-medium ${
                   billingCycle === 'yearly'
                     ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-slate-100'
@@ -156,6 +178,19 @@ const Billing = () => {
                 </ul>
 
                 <button
+                  onClick={() => {
+                    if (!plan.current && typeof pendo !== 'undefined') {
+                      const currentPlan = plans.find(p => p.current);
+                      pendo.track('plan_upgraded', {
+                        currentPlan: currentPlan ? currentPlan.name : 'unknown',
+                        selectedPlan: plan.name,
+                        billingCycle: billingCycle,
+                        previousPrice: currentPlan ? String(currentPlan.price[billingCycle]) : 'unknown',
+                        newPrice: String(plan.price[billingCycle]),
+                        planFeatures: plan.features.join(', ').substring(0, 200)
+                      });
+                    }
+                  }}
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-all ${
                     plan.current
                       ? 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
@@ -195,7 +230,17 @@ const Billing = () => {
             ))}
           </div>
 
-          <button className="flex items-center space-x-2 text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium">
+          <button
+            onClick={() => {
+              if (typeof pendo !== 'undefined') {
+                pendo.track('payment_method_added', {
+                  paymentMethodType: 'card',
+                  existingMethodCount: String(paymentMethods.length)
+                });
+              }
+            }}
+            className="flex items-center space-x-2 text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium"
+          >
             <span>Add Payment Method</span>
             <ArrowRight className="w-4 h-4" />
           </button>

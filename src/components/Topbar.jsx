@@ -5,6 +5,7 @@ const Topbar = ({ onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const notifications = [
     { id: 1, text: 'API usage at 80% of monthly limit', time: '2 hours ago', type: 'warning' },
@@ -30,6 +31,18 @@ const Topbar = ({ onMenuClick }) => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && searchValue.trim()) {
+                  if (typeof pendo !== 'undefined') {
+                    pendo.track('search_executed', {
+                      query: searchValue.trim().substring(0, 100),
+                      searchContext: 'global_topbar'
+                    });
+                  }
+                }
+              }}
               placeholder="Search tools, reports, or keywords..."
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
             />

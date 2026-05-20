@@ -44,17 +44,32 @@ const Tools = () => {
 
   const handleToolRun = async () => {
     if (!inputValue.trim()) return;
-    
+
     setIsLoading(true);
+    const startTime = Date.now();
     // Simulate API call
     setTimeout(() => {
-      setResults({
+      const resultData = {
         tool: activeTool.name,
         input: inputValue,
         data: `Sample results for "${inputValue}" using ${activeTool.name}`,
         timestamp: new Date().toISOString()
-      });
+      };
+      setResults(resultData);
       setIsLoading(false);
+
+      if (typeof pendo !== 'undefined') {
+        pendo.track('seo_tool_executed', {
+          toolId: activeTool.id,
+          toolName: activeTool.name,
+          toolCategory: activeCategory,
+          inputLength: inputValue.length,
+          inputValue: inputValue.substring(0, 100),
+          executionDurationMs: Date.now() - startTime,
+          hasResults: true,
+          timestamp: resultData.timestamp
+        });
+      }
     }, 2000);
   };
 
@@ -180,10 +195,37 @@ const Tools = () => {
                   <h3 className="text-base lg:text-lg font-semibold text-slate-900 dark:text-slate-100">Results</h3>
                   {results && (
                     <div className="flex space-x-1 lg:space-x-2">
-                      <button className="p-1 lg:p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                      <button
+                        onClick={() => {
+                          if (typeof pendo !== 'undefined') {
+                            pendo.track('tool_results_downloaded', {
+                              toolId: activeTool.id,
+                              toolName: activeTool.name,
+                              toolCategory: activeCategory,
+                              inputValue: inputValue.substring(0, 100),
+                              resultTimestamp: results.timestamp
+                            });
+                          }
+                        }}
+                        className="p-1 lg:p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                      >
                         <Download className="w-3 h-3 lg:w-4 lg:h-4" />
                       </button>
-                      <button className="p-1 lg:p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                      <button
+                        onClick={() => {
+                          if (typeof pendo !== 'undefined') {
+                            pendo.track('tool_results_shared', {
+                              toolId: activeTool.id,
+                              toolName: activeTool.name,
+                              toolCategory: activeCategory,
+                              inputValue: inputValue.substring(0, 100),
+                              shareMethod: 'share_button',
+                              resultTimestamp: results.timestamp
+                            });
+                          }
+                        }}
+                        className="p-1 lg:p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                      >
                         <Share2 className="w-3 h-3 lg:w-4 lg:h-4" />
                       </button>
                     </div>
