@@ -43,6 +43,17 @@ import React from 'react';
       };
     });
 
+    pendo.initialize({
+      visitor: {
+        id: 'john.doe@example.com',
+        email: 'john.doe@example.com',
+        full_name: 'John Doe',
+        company: 'Acme Inc',
+        position: 'SEO Manager',
+        planLevel: 'Pro'
+      }
+    });
+
     ReactDOM.createRoot(document.getElementById('root')).render(
       <React.StrictMode>
         <App />
