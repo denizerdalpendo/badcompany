@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Moon, Sun, LogOut, Settings, Menu } from 'lucide-react';
 
 const Topbar = ({ onMenuClick }) => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -110,7 +112,18 @@ const Topbar = ({ onMenuClick }) => {
             {showUserMenu && (
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-50">
                 <div className="p-2">
-                  <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg">
+                  <button
+                    onClick={() => {
+                      setShowUserMenu(false);
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('account_settings_opened', {
+                          source: 'topbar_user_menu'
+                        });
+                      }
+                      navigate('/account-settings');
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                  >
                     <Settings className="w-4 h-4" />
                     <span>Account Settings</span>
                   </button>

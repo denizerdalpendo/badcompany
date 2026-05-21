@@ -10,6 +10,7 @@ import Tools from './src/pages/Tools.jsx';
 import Reports from './src/pages/Reports.jsx';
 import Billing from './src/pages/Billing.jsx';
 import Settings from './src/pages/Settings.jsx';
+import AccountSettings from './src/pages/AccountSettings.jsx';
 import Support from './src/pages/Support.jsx';
 import NotFound from './src/pages/NotFound.jsx';
 
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/reports" element={<Reports />} />
             <Route path="/billing" element={<Billing />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/account-settings" element={<AccountSettings />} />
             <Route path="/support" element={<Support />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
