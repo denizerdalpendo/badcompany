@@ -49,7 +49,13 @@ const StatsCard = ({ title, value, subtitle, icon: Icon, color = 'violet', progr
       
       {trend && (
         <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-          <span className={`text-xs font-medium ${trend.positive ? 'text-green-600' : 'text-red-600'}`}>
+          <span
+            className={`text-xs font-medium ${
+              trend.positive
+                ? 'text-[#16a34a]'
+                : 'text-slate-900 dark:text-slate-100'
+            }`}
+          >
             {trend.positive ? '↗' : '↘'} {trend.value} from last month
           </span>
         </div>

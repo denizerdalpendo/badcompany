@@ -108,7 +108,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
               >
                 <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-violet-600 dark:text-violet-400' : ''}`} />
                 {!isCollapsed && (
-                  <span className="font-medium">{item.label}</span>
+                  <span className="font-medium text-[12px]">{item.label}</span>
                 )}
               </RouterLink>
               
@@ -120,7 +120,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
                       key={subItem.path}
                       to={subItem.path}
                       onClick={() => setIsMobileOpen(false)}
-                      className={`block px-3 py-2 text-sm rounded-lg transition-colors ${
+                      className={`block px-3 py-2 text-[12px] rounded-lg transition-colors ${
                         location.pathname === subItem.path
                           ? 'text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20'
                           : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
