@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import Logo from '../components/Logo.jsx';
 
 const Login = () => {
   const { signIn } = useAuth();
@@ -35,8 +36,10 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 px-4">
       <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-8">
         <div className="mb-8 text-center">
-          <div className="mx-auto w-12 h-12 bg-gradient-to-br from-violet-600 to-indigo-500 rounded-xl mb-4" />
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Welcome back</h1>
+          <div className="flex justify-center mb-4">
+            <Logo size="lg" showName={false} />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Welcome to Bad Company</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Sign in to your account to continue
           </p>

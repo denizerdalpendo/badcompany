@@ -24,7 +24,7 @@ const NotFound = () => {
           </Link>
           
           <p className="text-sm text-slate-500 dark:text-slate-500">
-            © {new Date().getFullYear()} SaaSBoard - All rights reserved
+            © {new Date().getFullYear()} Bad Company - All rights reserved
           </p>
         </div>
       </div>

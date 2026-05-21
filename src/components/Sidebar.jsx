@@ -17,6 +17,7 @@ import {
   X
 } from 'lucide-react';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
+import Logo from './Logo.jsx';
 
 const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) => {
   const location = useLocation();
@@ -66,12 +67,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
       }`}>
         {/* Mobile header */}
         <div className="lg:hidden p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-500 rounded-lg flex items-center justify-center">
-              <Search className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold text-lg text-slate-800 dark:text-slate-100">SaaSBoard</span>
-          </div>
+          <Logo size="md" />
           <button
             onClick={() => setIsMobileOpen(false)}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -83,14 +79,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
 
         {/* Header */}
         <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between hidden lg:flex">
-          {!isCollapsed && (
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-500 rounded-lg flex items-center justify-center">
-                <Search className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-lg text-slate-800 dark:text-slate-100">SaaSBoard</span>
-            </div>
-          )}
+          {!isCollapsed ? <Logo size="md" /> : <Logo size="md" showName={false} />}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors hidden lg:block"
