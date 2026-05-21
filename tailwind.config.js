@@ -1,9 +1,20 @@
-import colors from 'tailwindcss/colors';
-
-// Remap every accent color to a true neutral so the entire UI renders
-// monochrome (black/gray scale) without any blue tint, in both light
-// and dark modes.
-const mono = colors.neutral;
+// Custom monochrome palette: pure grays for light mode, pure black at
+// the dark end so dark mode reads as black-on-black, not gray-on-gray.
+// The hierarchy from 700 -> 800 -> 900 still provides subtle surface
+// contrast (borders/hovers/cards/page) when stacked.
+const mono = {
+  50: '#fafafa',
+  100: '#f4f4f4',
+  200: '#e5e5e5',
+  300: '#d4d4d4',
+  400: '#a3a3a3',
+  500: '#737373',
+  600: '#3f3f3f',
+  700: '#1f1f1f',
+  800: '#0a0a0a',
+  900: '#000000',
+  950: '#000000',
+};
 
 /** @type {import('tailwindcss').Config} */
 export default {
