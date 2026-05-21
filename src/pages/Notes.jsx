@@ -181,7 +181,7 @@ const Notes = () => {
                   </span>
                   <button
                     onClick={() => handleDelete(activeNote.id)}
-                    className="flex items-center space-x-1 px-2 py-1 text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-[6px] transition-colors"
+                    className="flex items-center space-x-1 px-2 py-1 text-[11px] font-medium text-[#dc2626] hover:text-white hover:bg-[#dc2626] rounded-[6px] transition-colors"
                     aria-label="Delete note"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
