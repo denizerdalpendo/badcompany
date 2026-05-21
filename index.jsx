@@ -43,15 +43,11 @@ import React from 'react';
       };
     });
 
+    // Initialize Pendo anonymously; AuthContext will call pendo.identify
+    // with the real visitor + account once the user signs in.
     pendo.initialize({
-      visitor: {
-        id: 'john.doe@example.com',
-        email: 'john.doe@example.com',
-        full_name: 'John Doe',
-        company: 'Acme Inc',
-        position: 'SEO Manager',
-        planLevel: 'Pro'
-      }
+      visitor: { id: null },
+      account: { id: null }
     });
 
     ReactDOM.createRoot(document.getElementById('root')).render(

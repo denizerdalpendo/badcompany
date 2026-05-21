@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { accountFromEmail } from './accountFromEmail.js';
 
 // DEMO ONLY: localStorage-backed mock auth for prototyping.
 // Passwords are stored in plaintext in the browser. Do not ship to real users.
@@ -31,11 +32,37 @@ const writeSession = (session) => {
   else localStorage.removeItem(SESSION_KEY);
 };
 
-const publicShape = (user) => ({
-  id: user.id,
-  email: user.email,
-  user_metadata: user.user_metadata
-});
+const publicShape = (user) => {
+  // Always recompute `account` from email so older records get it too
+  const account = accountFromEmail(user.email);
+  return {
+    id: user.id,
+    email: user.email,
+    user_metadata: { ...(user.user_metadata || {}), account }
+  };
+};
+
+const identifyPendo = (user) => {
+  if (typeof pendo === 'undefined' || typeof pendo.identify !== 'function') return;
+  if (!user) {
+    // Anonymous — Pendo will treat as a new visitor
+    pendo.identify({ visitor: { id: null }, account: { id: null } });
+    return;
+  }
+  const account = user.user_metadata?.account || '';
+  pendo.identify({
+    visitor: {
+      id: user.email,
+      email: user.email,
+      full_name: user.user_metadata?.full_name || '',
+      account
+    },
+    account: {
+      id: account || 'unknown',
+      name: account || 'unknown'
+    }
+  });
+};
 
 const AuthContext = createContext(null);
 
@@ -44,7 +71,8 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSession(readSession());
+    const initial = readSession();
+    setSession(initial);
     setLoading(false);
 
     // Stay in sync if the user logs in/out in another tab
@@ -54,6 +82,11 @@ export const AuthProvider = ({ children }) => {
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
   }, []);
+
+  // Re-identify in Pendo whenever the session changes
+  useEffect(() => {
+    identifyPendo(session?.user ?? null);
+  }, [session]);
 
   const signUp = async ({ email, password, fullName }) => {
     const normalized = (email || '').trim().toLowerCase();
@@ -74,7 +107,10 @@ export const AuthProvider = ({ children }) => {
           : String(Date.now()),
       email: normalized,
       password,
-      user_metadata: { full_name: fullName || '' },
+      user_metadata: {
+        full_name: fullName || '',
+        account: accountFromEmail(normalized)
+      },
       created_at: new Date().toISOString()
     };
     writeUsers([...users, newUser]);

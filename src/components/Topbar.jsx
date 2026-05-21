@@ -13,6 +13,7 @@ const Topbar = ({ onMenuClick }) => {
     user?.user_metadata?.full_name ||
     (user?.email ? user.email.split('@')[0] : 'Account');
   const displayEmail = user?.email || '';
+  const displayAccount = user?.user_metadata?.account || '';
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -285,6 +286,11 @@ const Topbar = ({ onMenuClick }) => {
                 <div className="p-3 border-b border-slate-200 dark:border-slate-700">
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{displayName}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{displayEmail}</p>
+                  {displayAccount && (
+                    <p className="mt-2 inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">
+                      {displayAccount}
+                    </p>
+                  )}
                 </div>
 
                 {/* Actions */}
