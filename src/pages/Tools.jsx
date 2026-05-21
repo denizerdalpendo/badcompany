@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Layout from '../components/Layout';
 import { Search, FileText, Code, Link, Zap, BarChart3, Download, Share2 } from 'lucide-react';
 
 const Tools = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeCategory, setActiveCategory] = useState('keyword-content');
   const [inputValue, setInputValue] = useState('');
   const [results, setResults] = useState(null);
@@ -41,6 +43,25 @@ const Tools = () => {
   ];
 
   const [activeTool, setActiveTool] = useState(categories[0].tools[0]);
+
+  // Sync active category/tool with URL query params (?category=&tool=)
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    const toolParam = searchParams.get('tool');
+    if (!categoryParam && !toolParam) return;
+
+    const matchedCategory =
+      categories.find((c) => c.id === categoryParam) ||
+      (toolParam ? categories.find((c) => c.tools.some((t) => t.id === toolParam)) : null);
+
+    if (matchedCategory) {
+      setActiveCategory(matchedCategory.id);
+      const matchedTool =
+        matchedCategory.tools.find((t) => t.id === toolParam) || matchedCategory.tools[0];
+      setActiveTool(matchedTool);
+      setResults(null);
+    }
+  }, [searchParams]);
 
   const handleToolRun = async () => {
     if (!inputValue.trim()) return;
@@ -95,6 +116,7 @@ const Tools = () => {
                 setActiveCategory(category.id);
                 setActiveTool(category.tools[0]);
                 setResults(null);
+                setSearchParams({ category: category.id, tool: category.tools[0].id });
               }}
               className={`px-3 py-2 rounded-lg text-xs lg:text-sm font-medium transition-all whitespace-nowrap ${
                 activeCategory === category.id
@@ -122,6 +144,7 @@ const Tools = () => {
                     onClick={() => {
                       setActiveTool(tool);
                       setResults(null);
+                      setSearchParams({ category: activeCategory, tool: tool.id });
                     }}
                     className={`w-full text-left p-2 lg:p-3 rounded-xl transition-all text-sm ${
                       activeTool.id === tool.id

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, User, Moon, Sun, Monitor, LogOut, Settings, Menu } from 'lucide-react';
+import { Search, Bell, User, Moon, Sun, Monitor, LogOut, Settings, Menu, CornerDownLeft } from 'lucide-react';
 import { useTheme } from '../theme/ThemeContext.jsx';
+import { searchItems } from '../search/searchIndex.js';
 
 const Topbar = ({ onMenuClick }) => {
   const navigate = useNavigate();
@@ -9,6 +10,40 @@ const Topbar = ({ onMenuClick }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const searchWrapRef = useRef(null);
+  const searchInputRef = useRef(null);
+
+  const results = useMemo(() => searchItems(searchValue, 8), [searchValue]);
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [searchValue]);
+
+  // Close search dropdown on outside click
+  useEffect(() => {
+    const onClick = (e) => {
+      if (searchWrapRef.current && !searchWrapRef.current.contains(e.target)) {
+        setShowSearch(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () => document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  // Cmd/Ctrl + K to focus search
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setShowSearch(true);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, []);
 
   const notifications = [
     { id: 1, text: 'API usage at 80% of monthly limit', time: '2 hours ago', type: 'warning' },
@@ -32,6 +67,58 @@ const Topbar = ({ onMenuClick }) => {
     }
   };
 
+  const selectResult = (item) => {
+    if (!item) return;
+    if (typeof pendo !== 'undefined') {
+      pendo.track('search_result_selected', {
+        query: searchValue.trim().substring(0, 100),
+        resultId: item.id,
+        resultTitle: item.title,
+        resultGroup: item.group,
+        resultPath: item.path
+      });
+    }
+    setShowSearch(false);
+    setSearchValue('');
+    navigate(item.path);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (results.length) setActiveIndex((i) => (i + 1) % results.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (results.length) setActiveIndex((i) => (i - 1 + results.length) % results.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (results.length) {
+        selectResult(results[activeIndex]);
+      } else if (searchValue.trim() && typeof pendo !== 'undefined') {
+        pendo.track('search_executed', {
+          query: searchValue.trim().substring(0, 100),
+          searchContext: 'global_topbar'
+        });
+      }
+    } else if (e.key === 'Escape') {
+      setShowSearch(false);
+    }
+  };
+
+  // Group results by group
+  const grouped = useMemo(() => {
+    const out = [];
+    let last = null;
+    results.forEach((r, i) => {
+      if (r.group !== last) {
+        out.push({ type: 'header', label: r.group, key: `h-${r.group}-${i}` });
+        last = r.group;
+      }
+      out.push({ type: 'item', item: r, index: i, key: r.id });
+    });
+    return out;
+  }, [results]);
+
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-4 lg:px-6 py-4">
       <div className="flex items-center justify-between">
@@ -45,26 +132,97 @@ const Topbar = ({ onMenuClick }) => {
         </button>
 
         {/* Search Bar */}
-        <div className="flex-1 max-w-xl mx-4">
+        <div className="flex-1 max-w-xl mx-4" ref={searchWrapRef}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
+              ref={searchInputRef}
               type="text"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchValue.trim()) {
-                  if (typeof pendo !== 'undefined') {
-                    pendo.track('search_executed', {
-                      query: searchValue.trim().substring(0, 100),
-                      searchContext: 'global_topbar'
-                    });
-                  }
-                }
+              onFocus={() => setShowSearch(true)}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                setShowSearch(true);
               }}
-              placeholder="Search tools, reports, or keywords..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search pages, tools, settings…"
+              className="w-full pl-10 pr-16 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
             />
+            <kbd className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 items-center space-x-1 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-[10px] font-medium text-slate-500 dark:text-slate-400">
+              <span>⌘</span><span>K</span>
+            </kbd>
+
+            {/* Results dropdown */}
+            {showSearch && (
+              <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-50 overflow-hidden">
+                {searchValue.trim() === '' ? (
+                  <div className="p-4 text-sm text-slate-500 dark:text-slate-400">
+                    Search pages, SEO tools, or settings. Use{' '}
+                    <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-xs">↑</kbd>{' '}
+                    <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-xs">↓</kbd>{' '}
+                    to navigate,{' '}
+                    <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-xs">Enter</kbd>{' '}
+                    to open.
+                  </div>
+                ) : results.length === 0 ? (
+                  <div className="p-4 text-sm text-slate-500 dark:text-slate-400">
+                    No results for &ldquo;{searchValue}&rdquo;.
+                  </div>
+                ) : (
+                  <ul className="max-h-96 overflow-y-auto py-1" role="listbox">
+                    {grouped.map((row) => {
+                      if (row.type === 'header') {
+                        return (
+                          <li
+                            key={row.key}
+                            className="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500"
+                          >
+                            {row.label}
+                          </li>
+                        );
+                      }
+                      const { item, index } = row;
+                      const Icon = item.icon || Search;
+                      const isActive = index === activeIndex;
+                      return (
+                        <li key={row.key} role="option" aria-selected={isActive}>
+                          <button
+                            onMouseEnter={() => setActiveIndex(index)}
+                            onClick={() => selectResult(item)}
+                            className={`w-full flex items-center space-x-3 px-3 py-2 text-left transition-colors ${
+                              isActive
+                                ? 'bg-violet-50 dark:bg-violet-900/20'
+                                : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                            }`}
+                          >
+                            <div
+                              className={`flex items-center justify-center w-8 h-8 rounded-lg ${
+                                isActive
+                                  ? 'bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-300'
+                                  : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                              }`}
+                            >
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                                {item.title}
+                              </p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                                {item.description}
+                              </p>
+                            </div>
+                            {isActive && (
+                              <CornerDownLeft className="w-3.5 h-3.5 text-slate-400" />
+                            )}
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
