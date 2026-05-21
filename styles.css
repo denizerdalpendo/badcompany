@@ -1,3 +1,22 @@
 @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root,
+  .radix-themes {
+    --default-font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --heading-font-family: var(--default-font-family);
+    --code-font-family: var(--default-font-family);
+  }
+
+  html,
+  body,
+  button,
+  input,
+  textarea,
+  select,
+  kbd {
+    font-family: var(--default-font-family);
+  }
+}

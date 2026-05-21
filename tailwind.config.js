@@ -13,6 +13,17 @@ export default {
     "./App.jsx",
   ],
   theme: {
+    borderRadius: {
+      none: '0px',
+      sm: '2px',
+      DEFAULT: '2px',
+      md: '2px',
+      lg: '2px',
+      xl: '2px',
+      '2xl': '2px',
+      '3xl': '2px',
+      full: '9999px',
+    },
     extend: {
       fontFamily: {
         sans: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
