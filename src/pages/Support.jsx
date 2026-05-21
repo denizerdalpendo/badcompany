@@ -103,7 +103,21 @@ const Support = () => {
         <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
           <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">Contact Us</h2>
           
-          <form className="space-y-4">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              if (typeof pendo !== 'undefined') {
+                pendo.track('support_request_submitted', {
+                  subject: (formData.get('subject') || '').substring(0, 100),
+                  messageLength: (formData.get('message') || '').length,
+                  hasName: Boolean(formData.get('name')),
+                  hasEmail: Boolean(formData.get('email'))
+                });
+              }
+            }}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -111,45 +125,49 @@ const Support = () => {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   placeholder="Your name"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                   Email
                 </label>
                 <input
                   type="email"
+                  name="email"
                   className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                   placeholder="your@email.com"
                 />
               </div>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Subject
               </label>
               <input
                 type="text"
+                name="subject"
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                 placeholder="What can we help you with?"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Message
               </label>
               <textarea
+                name="message"
                 rows={4}
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none"
                 placeholder="Please describe your issue in detail..."
               />
             </div>
-            
+
             <button
               type="submit"
               className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-3 px-4 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-600 transition-all"

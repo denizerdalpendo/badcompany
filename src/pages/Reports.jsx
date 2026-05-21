@@ -49,7 +49,17 @@ const Reports = () => {
               Access and manage your SEO analysis reports
             </p>
           </div>
-          <button className="bg-gradient-to-r from-violet-600 to-indigo-500 text-white px-6 py-3 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-600 transition-all">
+          <button
+            onClick={() => {
+              if (typeof pendo !== 'undefined') {
+                pendo.track('report_generated', {
+                  reportType: 'new',
+                  timestamp: new Date().toISOString()
+                });
+              }
+            }}
+            className="bg-gradient-to-r from-violet-600 to-indigo-500 text-white px-6 py-3 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-600 transition-all"
+          >
             Generate New Report
           </button>
         </div>
@@ -98,7 +108,21 @@ const Reports = () => {
               </div>
               
               <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <button className="w-full flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <button
+                  onClick={() => {
+                    if (typeof pendo !== 'undefined') {
+                      pendo.track('report_downloaded', {
+                        reportId: String(report.id),
+                        reportTitle: report.title,
+                        reportType: report.type,
+                        reportDate: report.date,
+                        reportSize: report.size,
+                        reportStatus: report.status
+                      });
+                    }
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 py-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                >
                   <Download className="w-4 h-4" />
                   <span>Download PDF</span>
                 </button>

@@ -108,7 +108,19 @@ const Settings = () => {
                 <button className="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-medium">
                   Cancel
                 </button>
-                <button className="px-6 py-2 bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-lg font-medium hover:from-violet-700 hover:to-indigo-600">
+                <button
+                  onClick={() => {
+                    if (typeof pendo !== 'undefined') {
+                      pendo.track('profile_updated', {
+                        hasName: Boolean(profile.name),
+                        hasEmail: Boolean(profile.email),
+                        hasCompany: Boolean(profile.company),
+                        hasPosition: Boolean(profile.position)
+                      });
+                    }
+                  }}
+                  className="px-6 py-2 bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-lg font-medium hover:from-violet-700 hover:to-indigo-600"
+                >
                   Save Changes
                 </button>
               </div>
@@ -177,7 +189,17 @@ const Settings = () => {
                       className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                     />
                   </div>
-                  <button className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-lg text-sm font-medium">
+                  <button
+                    onClick={() => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('password_changed', {
+                          success: true,
+                          source: 'settings_security'
+                        });
+                      }
+                    }}
+                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-500 text-white rounded-lg text-sm font-medium"
+                  >
                     Update Password
                   </button>
                 </div>
@@ -187,7 +209,17 @@ const Settings = () => {
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                     Add an extra layer of security to your account
                   </p>
-                  <button className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <button
+                    onClick={() => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('two_factor_auth_enabled', {
+                          method: 'authenticator',
+                          success: true
+                        });
+                      }
+                    }}
+                    className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
+                  >
                     Enable 2FA
                   </button>
                 </div>
@@ -217,7 +249,16 @@ const Settings = () => {
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                     Download all your data in CSV format
                   </p>
-                  <button className="flex items-center space-x-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <button
+                    onClick={() => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('data_exported', {
+                          exportFormat: 'csv'
+                        });
+                      }
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700"
+                  >
                     <Download className="w-4 h-4" />
                     <span>Export Data</span>
                   </button>
@@ -228,7 +269,16 @@ const Settings = () => {
                   <p className="text-sm text-red-700 dark:text-red-300 mb-4">
                     Permanently delete your account and all associated data
                   </p>
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700">
+                  <button
+                    onClick={() => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('account_deleted', {
+                          source: 'settings_preferences'
+                        });
+                      }
+                    }}
+                    className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700"
+                  >
                     <Trash2 className="w-4 h-4" />
                     <span>Delete Account</span>
                   </button>
