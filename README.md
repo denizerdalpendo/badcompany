@@ -1,5 +1,7 @@
 # SaaSBoard – Free SaaS Dashboard Template
 
+VERCEL URL: https://badcompany-lovat.vercel.app/
+
 SaaSBoard is a free, open-source, and premium-quality **SaaS dashboard template** built with [**Meku - AI web app builder**](https://meku.dev/). It's comes with essential pages and components you need to track KPIs, manage SaaS metrics, and design professional dashboards for your product, business, or startup.
 
 If you're looking for a high-quality, visually appealing, and feature-rich **SaaS dashboard template** to start your next project, SaaSBoard is the perfect choice and starting point for you!
