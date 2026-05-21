@@ -5,8 +5,15 @@ import StatsCard from '../components/StatsCard';
 import QuickActions from '../components/QuickActions';
 import RecentActivity from '../components/RecentActivity';
 import { Search, BarChart3, Zap, CreditCard } from 'lucide-react';
+import { useAuth } from '../auth/AuthContext.jsx';
 
 const Home = () => {
+  const { user } = useAuth();
+  const firstName =
+    user?.user_metadata?.full_name?.trim().split(/\s+/)[0] ||
+    (user?.email ? user.email.split('@')[0] : '');
+  const greeting = firstName ? `Welcome back, ${firstName}!` : 'Welcome back!';
+
   return (
     <Layout>
       <div className="space-y-6">
@@ -17,7 +24,7 @@ const Home = () => {
           className="mb-6 lg:mb-8"
         >
           <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-            Welcome back, John! 👋
+            {greeting} 👋
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm lg:text-base">
             Here's what's happening with your SEO tools today.
