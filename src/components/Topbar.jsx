@@ -2,11 +2,17 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell, User, Moon, Sun, Monitor, LogOut, Settings, Menu, CornerDownLeft } from 'lucide-react';
 import { useTheme } from '../theme/ThemeContext.jsx';
+import { useAuth } from '../auth/AuthContext.jsx';
 import { searchItems } from '../search/searchIndex.js';
 
 const Topbar = ({ onMenuClick }) => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { user, signOut } = useAuth();
+  const displayName =
+    user?.user_metadata?.full_name ||
+    (user?.email ? user.email.split('@')[0] : 'Account');
+  const displayEmail = user?.email || '';
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -266,8 +272,10 @@ const Topbar = ({ onMenuClick }) => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <div className="text-left hidden md:block">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">John Doe</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Pro Plan</p>
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{displayName}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[140px]">
+                  {displayEmail || 'Pro Plan'}
+                </p>
               </div>
             </button>
 
@@ -275,8 +283,8 @@ const Topbar = ({ onMenuClick }) => {
               <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-50">
                 {/* User header */}
                 <div className="p-3 border-b border-slate-200 dark:border-slate-700">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">John Doe</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">john.doe@example.com</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{displayName}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{displayEmail}</p>
                 </div>
 
                 {/* Actions */}
@@ -328,7 +336,21 @@ const Topbar = ({ onMenuClick }) => {
 
                 {/* Sign out */}
                 <div className="p-2 border-t border-slate-200 dark:border-slate-700">
-                  <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                  <button
+                    onClick={async () => {
+                      setShowUserMenu(false);
+                      try {
+                        await signOut();
+                        if (typeof pendo !== 'undefined') {
+                          pendo.track('user_signed_out', { source: 'topbar_user_menu' });
+                        }
+                        navigate('/login', { replace: true });
+                      } catch (err) {
+                        console.error('Failed to sign out', err);
+                      }
+                    }}
+                    className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                  >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
                   </button>
