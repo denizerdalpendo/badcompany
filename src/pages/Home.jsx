@@ -1,18 +1,44 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 import Layout from '../components/Layout';
 import StatsCard from '../components/StatsCard';
 import QuickActions from '../components/QuickActions';
 import RecentActivity from '../components/RecentActivity';
 import { Search, BarChart3, Zap, CreditCard } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { useTheme } from '../theme/ThemeContext.jsx';
+
+const usageData = [
+  { day: 'Mon', queries: 142 },
+  { day: 'Tue', queries: 198 },
+  { day: 'Wed', queries: 167 },
+  { day: 'Thu', queries: 241 },
+  { day: 'Fri', queries: 213 },
+  { day: 'Sat', queries: 89 },
+  { day: 'Sun', queries: 73 }
+];
 
 const Home = () => {
   const { user } = useAuth();
+  const { resolved } = useTheme();
   const firstName =
     user?.user_metadata?.full_name?.trim().split(/\s+/)[0] ||
     (user?.email ? user.email.split('@')[0] : '');
   const greeting = firstName ? `Welcome back, ${firstName}!` : 'Welcome back!';
+
+  const isDark = resolved === 'dark';
+  const barColor = isDark ? '#fafafa' : '#0a0a0a';
+  const axisColor = isDark ? '#a3a3a3' : '#525252';
+  const gridColor = isDark ? '#1f1f1f' : '#e5e5e5';
 
   return (
     <Layout>
@@ -29,6 +55,63 @@ const Home = () => {
           <p className="text-slate-600 dark:text-slate-400 text-sm lg:text-base">
             Here's what's happening with your SEO tools today.
           </p>
+        </motion.div>
+
+        {/* Usage Overview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-slate-800 rounded-2xl p-4 lg:p-6 border border-slate-200 dark:border-slate-700"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                Usage Overview
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                API queries · last 7 days
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+                {usageData.reduce((sum, d) => sum + d.queries, 0)}
+              </p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">total queries</p>
+            </div>
+          </div>
+
+          <div className="h-48 lg:h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={usageData} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  stroke={axisColor}
+                  tick={{ fill: axisColor, fontSize: 11 }}
+                  axisLine={{ stroke: gridColor }}
+                  tickLine={false}
+                />
+                <YAxis
+                  stroke={axisColor}
+                  tick={{ fill: axisColor, fontSize: 11 }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  cursor={{ fill: gridColor, opacity: 0.4 }}
+                  contentStyle={{
+                    backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
+                    border: `1px solid ${gridColor}`,
+                    borderRadius: 2,
+                    fontSize: 12,
+                    color: isDark ? '#fafafa' : '#0a0a0a'
+                  }}
+                  labelStyle={{ color: isDark ? '#fafafa' : '#0a0a0a' }}
+                />
+                <Bar dataKey="queries" fill={barColor} radius={[2, 2, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </motion.div>
 
         {/* Stats Cards */}
@@ -80,18 +163,6 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Usage Chart Placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl p-4 lg:p-6 border border-slate-200 dark:border-slate-700"
-        >
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Usage Overview</h2>
-          <div className="h-48 lg:h-64 bg-slate-50 dark:bg-slate-700 rounded-xl flex items-center justify-center">
-            <p className="text-slate-500 dark:text-slate-400 text-sm lg:text-base">Chart will be implemented with Recharts</p>
-          </div>
-        </motion.div>
       </div>
     </Layout>
   );
