@@ -111,7 +111,11 @@ const Settings = () => {
                 <button
                   onClick={() => {
                     if (typeof pendo !== 'undefined') {
+                      const fieldsChanged = ['name', 'email', 'company', 'position']
+                        .filter(f => profile[f])
+                        .join(',');
                       pendo.track('profile_updated', {
+                        fieldsChanged: fieldsChanged,
                         hasName: Boolean(profile.name),
                         hasEmail: Boolean(profile.email),
                         hasCompany: Boolean(profile.company),
@@ -253,7 +257,8 @@ const Settings = () => {
                     onClick={() => {
                       if (typeof pendo !== 'undefined') {
                         pendo.track('data_exported', {
-                          exportFormat: 'csv'
+                          exportFormat: 'csv',
+                          dataSize: 'unknown'
                         });
                       }
                     }}
@@ -273,7 +278,9 @@ const Settings = () => {
                     onClick={() => {
                       if (typeof pendo !== 'undefined') {
                         pendo.track('account_deleted', {
-                          source: 'settings_preferences'
+                          accountAge: 'unknown',
+                          currentPlan: 'Pro',
+                          reason: 'user_initiated'
                         });
                       }
                     }}
