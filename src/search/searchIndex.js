@@ -6,6 +6,7 @@ import {
   Settings,
   UserCog,
   LifeBuoy,
+  StickyNote,
   Search,
   FileText,
   Code,
@@ -82,6 +83,15 @@ export const searchIndex = [
     group: 'Pages',
     icon: LifeBuoy,
     keywords: ['support', 'help', 'contact', 'docs']
+  },
+  {
+    id: 'page-notes',
+    title: 'Notes',
+    description: 'Personal scratchpad — save and search your notes',
+    path: '/notes',
+    group: 'Pages',
+    icon: StickyNote,
+    keywords: ['notes', 'scratchpad', 'notebook', 'memo']
   },
 
   // SEO Tools — Keyword & Content

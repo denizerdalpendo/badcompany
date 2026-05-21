@@ -4,10 +4,11 @@ import {
   Search, 
   FileText, 
   Settings, 
-  Wrench, 
-  BarChart3, 
-  CreditCard, 
-  HelpCircle, 
+  Wrench,
+  BarChart3,
+  CreditCard,
+  HelpCircle,
+  StickyNote,
   ChevronLeft,
   ChevronRight,
   Link,
@@ -42,6 +43,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
       ]
     },
     { icon: BarChart3, label: 'Reports', path: '/reports' },
+    { icon: StickyNote, label: 'Notes', path: '/notes' },
     { icon: CreditCard, label: 'Billing', path: '/billing' },
     { icon: Settings, label: 'Settings', path: '/settings' },
     { icon: HelpCircle, label: 'Support', path: '/support' }

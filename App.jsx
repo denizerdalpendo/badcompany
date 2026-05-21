@@ -12,6 +12,7 @@ import Billing from './src/pages/Billing.jsx';
 import Settings from './src/pages/Settings.jsx';
 import AccountSettings from './src/pages/AccountSettings.jsx';
 import Support from './src/pages/Support.jsx';
+import Notes from './src/pages/Notes.jsx';
 import NotFound from './src/pages/NotFound.jsx';
 import Login from './src/pages/Login.jsx';
 import Register from './src/pages/Register.jsx';
@@ -50,6 +51,7 @@ export default function App() {
                 <Route path="/settings" element={protect(<Settings />)} />
                 <Route path="/account-settings" element={protect(<AccountSettings />)} />
                 <Route path="/support" element={protect(<Support />)} />
+                <Route path="/notes" element={protect(<Notes />)} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
               <ToastContainer
