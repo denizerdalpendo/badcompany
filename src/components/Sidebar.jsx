@@ -62,7 +62,7 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
         />
       )}
 
-      <aside className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} flex flex-col h-screen sticky top-0 z-50 lg:relative ${
+      <aside className={`bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-700 transition-all duration-300 ${isCollapsed ? 'w-14' : 'w-52'} flex flex-col h-screen sticky top-0 z-50 lg:relative ${
         isMobileOpen ? 'fixed left-0 top-0 h-full' : 'hidden lg:flex'
       }`}>
         {/* Mobile header */}
@@ -135,18 +135,6 @@ const Sidebar = ({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen })
           ))}
         </nav>
 
-        {/* Upgrade CTA */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-slate-200 dark:border-slate-700">
-            <div className="bg-gradient-to-br from-violet-600 to-indigo-500 rounded-xl p-4 text-white">
-              <h3 className="font-semibold text-sm mb-1">Upgrade to Pro</h3>
-              <p className="text-xs text-violet-100 mb-3">Unlock advanced SEO tools and unlimited reports</p>
-              <button className="w-full bg-white text-violet-600 text-sm font-medium py-2 px-3 rounded-lg hover:bg-violet-50 transition-colors">
-                Upgrade Now
-              </button>
-            </div>
-          </div>
-        )}
       </aside>
     </>
   );
