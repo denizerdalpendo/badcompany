@@ -51,10 +51,16 @@ const Reports = () => {
           </div>
           <button
             onClick={() => {
+              const startTime = Date.now();
+              const reportId = 'rpt_' + Date.now();
+              const reportTitle = 'New SEO Report';
+              // Simulate report generation
               if (typeof pendo !== 'undefined') {
                 pendo.track('report_generated', {
                   reportType: 'new',
-                  timestamp: new Date().toISOString()
+                  reportTitle: reportTitle,
+                  generationDurationMs: Date.now() - startTime,
+                  reportId: reportId
                 });
               }
             }}
