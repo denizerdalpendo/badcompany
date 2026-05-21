@@ -22,7 +22,7 @@ import ProtectedRoute from './src/components/ProtectedRoute.jsx';
 function ThemedShell({ children }) {
   const { resolved } = useTheme();
   return (
-    <Theme appearance={resolved} accentColor="gray" grayColor="slate" radius="none" scaling="100%">
+    <Theme appearance={resolved} accentColor="gray" grayColor="gray" radius="none" scaling="100%">
       {children}
     </Theme>
   );
