@@ -220,8 +220,8 @@ const Home = () => {
           </div>
         </motion.div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {/* Stats Cards — joined with 1px dividers, no gaps */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-[6px] overflow-hidden">
           <StatsCard
             title="API Queries"
             value="1,247"

@@ -1,9 +1,9 @@
 import React from 'react';
 
 const SIZES = {
-  sm: { box: 'w-7 h-7', text: 'text-xs', name: 'text-base' },
-  md: { box: 'w-8 h-8', text: 'text-sm', name: 'text-lg' },
-  lg: { box: 'w-12 h-12', text: 'text-lg', name: 'text-2xl' }
+  sm: { box: 'w-6 h-6', text: 'text-[10px]', name: 'text-xs' },
+  md: { box: 'w-7 h-7', text: 'text-xs', name: 'text-[13px]' },
+  lg: { box: 'w-10 h-10', text: 'text-sm', name: 'text-lg' }
 };
 
 const Logo = ({ size = 'md', showName = true, className = '' }) => {
@@ -32,7 +32,7 @@ const Logo = ({ size = 'md', showName = true, className = '' }) => {
         </svg>
       </div>
       {showName && (
-        <span className={`${s.name} font-bold tracking-tight text-slate-900 dark:text-slate-100`}>
+        <span className={`${s.name} font-bold tracking-tight text-slate-900 dark:text-slate-100 whitespace-nowrap`}>
           Bad Company
         </span>
       )}

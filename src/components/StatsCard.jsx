@@ -14,7 +14,7 @@ const StatsCard = ({ title, value, subtitle, icon: Icon, color = 'violet', progr
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
-      className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200"
+      className="bg-white dark:bg-slate-800 p-6 transition-all duration-200"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
