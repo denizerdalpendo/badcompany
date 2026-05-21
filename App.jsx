@@ -13,10 +13,21 @@ import Settings from './src/pages/Settings.jsx';
 import AccountSettings from './src/pages/AccountSettings.jsx';
 import Support from './src/pages/Support.jsx';
 import NotFound from './src/pages/NotFound.jsx';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext.jsx';
+
+function ThemedShell({ children }) {
+  const { resolved } = useTheme();
+  return (
+    <Theme appearance={resolved} radius="large" scaling="100%">
+      {children}
+    </Theme>
+  );
+}
 
 export default function App() {
   return (
-    <Theme appearance="inherit" radius="large" scaling="100%">
+    <ThemeProvider>
+      <ThemedShell>
       <Router>
         <main className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-50">
           <Routes>
@@ -38,6 +49,7 @@ export default function App() {
           />
         </main>
       </Router>
-    </Theme>
+      </ThemedShell>
+    </ThemeProvider>
   );
 }

@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, User, Moon, Sun, LogOut, Settings, Menu } from 'lucide-react';
+import { Search, Bell, User, Moon, Sun, Monitor, LogOut, Settings, Menu } from 'lucide-react';
+import { useTheme } from '../theme/ThemeContext.jsx';
 
 const Topbar = ({ onMenuClick }) => {
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [isDark, setIsDark] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
   const notifications = [
@@ -14,6 +15,22 @@ const Topbar = ({ onMenuClick }) => {
     { id: 2, text: 'New feature: Bulk keyword analysis', time: '1 day ago', type: 'info' },
     { id: 3, text: 'Monthly report ready for download', time: '2 days ago', type: 'success' }
   ];
+
+  const themeOptions = [
+    { id: 'light', label: 'Light', icon: Sun },
+    { id: 'dark', label: 'Dark', icon: Moon },
+    { id: 'system', label: 'System', icon: Monitor }
+  ];
+
+  const handleThemeChange = (next) => {
+    setTheme(next);
+    if (typeof pendo !== 'undefined') {
+      pendo.track('theme_changed', {
+        theme: next,
+        source: 'topbar_user_menu'
+      });
+    }
+  };
 
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-4 lg:px-6 py-4">
@@ -53,19 +70,6 @@ const Topbar = ({ onMenuClick }) => {
 
         {/* Right Side Actions */}
         <div className="flex items-center space-x-2 lg:space-x-4">
-          {/* Theme Toggle */}
-          <button
-            onClick={() => setIsDark(!isDark)}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Toggle theme"
-          >
-            {isDark ? (
-              <Sun className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            ) : (
-              <Moon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-            )}
-          </button>
-
           {/* Notifications */}
           <div className="relative">
             <button
@@ -110,7 +114,14 @@ const Topbar = ({ onMenuClick }) => {
             </button>
 
             {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-50">
+              <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 z-50">
+                {/* User header */}
+                <div className="p-3 border-b border-slate-200 dark:border-slate-700">
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">John Doe</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">john.doe@example.com</p>
+                </div>
+
+                {/* Actions */}
                 <div className="p-2">
                   <button
                     onClick={() => {
@@ -127,6 +138,38 @@ const Topbar = ({ onMenuClick }) => {
                     <Settings className="w-4 h-4" />
                     <span>Account Settings</span>
                   </button>
+                </div>
+
+                {/* Theme picker */}
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 dark:border-slate-700">
+                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400 px-1 mb-2 mt-2">
+                    Theme
+                  </p>
+                  <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-lg">
+                    {themeOptions.map((opt) => {
+                      const Icon = opt.icon;
+                      const active = theme === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          onClick={() => handleThemeChange(opt.id)}
+                          aria-pressed={active}
+                          className={`flex flex-col items-center justify-center space-y-1 px-2 py-2 rounded-md text-xs font-medium transition-all ${
+                            active
+                              ? 'bg-white dark:bg-slate-700 text-violet-600 dark:text-violet-300 shadow-sm'
+                              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{opt.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Sign out */}
+                <div className="p-2 border-t border-slate-200 dark:border-slate-700">
                   <button className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
