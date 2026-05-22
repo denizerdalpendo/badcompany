@@ -7,6 +7,7 @@ import {
   UserCog,
   LifeBuoy,
   StickyNote,
+  Globe,
   Search,
   FileText,
   Code,
@@ -92,6 +93,15 @@ export const searchIndex = [
     group: 'Pages',
     icon: StickyNote,
     keywords: ['notes', 'scratchpad', 'notebook', 'memo']
+  },
+  {
+    id: 'feature-analyse-domain',
+    title: 'Analyse Domain',
+    description: 'Run a quick SEO health check on any URL from the dashboard',
+    path: '/',
+    group: 'Pages',
+    icon: Globe,
+    keywords: ['analyse', 'analyze', 'domain', 'url', 'audit', 'seo check', 'health']
   },
 
   // SEO Tools — Keyword & Content

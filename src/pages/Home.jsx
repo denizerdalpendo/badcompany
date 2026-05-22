@@ -13,6 +13,7 @@ import Layout from '../components/Layout';
 import StatsCard from '../components/StatsCard';
 import QuickActions from '../components/QuickActions';
 import RecentActivity from '../components/RecentActivity';
+import AnalyseDomain from '../components/AnalyseDomain';
 import { Search, BarChart3, Zap, CreditCard } from 'lucide-react';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { useTheme } from '../theme/ThemeContext.jsx';
@@ -122,6 +123,9 @@ const Home = () => {
             Here's what's happening with your SEO tools today.
           </p>
         </motion.div>
+
+        {/* Analyse Domain */}
+        <AnalyseDomain />
 
         {/* Usage Overview */}
         <motion.div
