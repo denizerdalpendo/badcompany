@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import Layout from '../components/Layout';
 import { User, Bell, Shield, Globe, Download, Trash2 } from 'lucide-react';
 
+const initialProfile = {
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  company: 'Acme Inc',
+  position: 'SEO Manager'
+};
+
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
-  const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    company: 'Acme Inc',
-    position: 'SEO Manager'
-  });
+  const [profile, setProfile] = useState(initialProfile);
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -111,11 +113,11 @@ const Settings = () => {
                 <button
                   onClick={() => {
                     if (typeof pendo !== 'undefined') {
+                      const fieldsUpdated = Object.keys(profile).filter(
+                        (key) => profile[key] !== initialProfile[key]
+                      );
                       pendo.track('profile_updated', {
-                        hasName: Boolean(profile.name),
-                        hasEmail: Boolean(profile.email),
-                        hasCompany: Boolean(profile.company),
-                        hasPosition: Boolean(profile.position)
+                        fieldsUpdated: fieldsUpdated
                       });
                     }
                   }}
@@ -253,7 +255,7 @@ const Settings = () => {
                     onClick={() => {
                       if (typeof pendo !== 'undefined') {
                         pendo.track('data_exported', {
-                          exportFormat: 'csv'
+                          format: 'csv'
                         });
                       }
                     }}

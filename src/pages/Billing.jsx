@@ -98,11 +98,8 @@ const Billing = () => {
                   const previousCycle = billingCycle;
                   setBillingCycle('monthly');
                   if (previousCycle !== 'monthly' && typeof pendo !== 'undefined') {
-                    const currentPlan = plans.find(p => p.current);
                     pendo.track('billing_cycle_changed', {
-                      previousCycle: previousCycle,
-                      newCycle: 'monthly',
-                      currentPlan: currentPlan ? currentPlan.name : 'unknown'
+                      newCycle: 'monthly'
                     });
                   }
                 }}
@@ -119,11 +116,8 @@ const Billing = () => {
                   const previousCycle = billingCycle;
                   setBillingCycle('yearly');
                   if (previousCycle !== 'yearly' && typeof pendo !== 'undefined') {
-                    const currentPlan = plans.find(p => p.current);
                     pendo.track('billing_cycle_changed', {
-                      previousCycle: previousCycle,
-                      newCycle: 'yearly',
-                      currentPlan: currentPlan ? currentPlan.name : 'unknown'
+                      newCycle: 'yearly'
                     });
                   }
                 }}
@@ -182,12 +176,8 @@ const Billing = () => {
                     if (!plan.current && typeof pendo !== 'undefined') {
                       const currentPlan = plans.find(p => p.current);
                       pendo.track('plan_upgraded', {
-                        currentPlan: currentPlan ? currentPlan.name : 'unknown',
-                        selectedPlan: plan.name,
-                        billingCycle: billingCycle,
-                        previousPrice: currentPlan ? String(currentPlan.price[billingCycle]) : 'unknown',
-                        newPrice: String(plan.price[billingCycle]),
-                        planFeatures: plan.features.join(', ').substring(0, 200)
+                        planName: plan.name,
+                        billingCycle: billingCycle
                       });
                     }
                   }}
