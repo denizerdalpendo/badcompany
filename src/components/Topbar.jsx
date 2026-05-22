@@ -104,7 +104,7 @@ const Topbar = ({ onMenuClick }) => {
       } else if (searchValue.trim() && typeof pendo !== 'undefined') {
         pendo.track('search_executed', {
           query: searchValue.trim().substring(0, 100),
-          searchContext: 'global_topbar'
+          resultCount: results.length
         });
       }
     } else if (e.key === 'Escape') {
