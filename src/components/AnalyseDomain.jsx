@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Globe,
   Loader2,
@@ -9,10 +9,11 @@ import {
   Smartphone,
   FileText,
   Code,
-  Image as ImageIcon,
-  Zap
+  Zap,
+  Eye,
+  Link as LinkIcon
 } from 'lucide-react';
-import { analyzeDomain, isValidUrl, normalizeUrl } from '../lib/seoAnalysis.js';
+import { analyzeDomain, isValidUrl } from '../lib/seoAnalysis.js';
 
 const RECENT_KEY = 'demo-seo-recent';
 
@@ -29,15 +30,22 @@ const writeRecent = (entries) => {
 };
 
 const scoreColor = (score) => {
-  if (score >= 80) return '#16a34a'; // green
-  if (score >= 60) return '#ca8a04'; // amber
-  return '#dc2626'; // red
+  if (score == null) return '#737373';
+  if (score >= 90) return '#16a34a';
+  if (score >= 50) return '#ca8a04';
+  return '#dc2626';
 };
 
-const SeverityIcon = ({ severity }) => {
-  if (severity === 'error') return <AlertCircle className="w-3.5 h-3.5 text-[#dc2626] shrink-0 mt-0.5" />;
-  return <AlertTriangle className="w-3.5 h-3.5 text-[#ca8a04] shrink-0 mt-0.5" />;
-};
+const ScoreRing = ({ label, score }) => (
+  <div className="flex flex-col items-center justify-center p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px]">
+    <span className="text-3xl font-bold" style={{ color: scoreColor(score) }}>
+      {score ?? '—'}
+    </span>
+    <span className="text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 mt-1">
+      {label}
+    </span>
+  </div>
+);
 
 const Metric = ({ icon: Icon, label, value, ok }) => (
   <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px]">
@@ -55,14 +63,23 @@ const Metric = ({ icon: Icon, label, value, ok }) => (
   </div>
 );
 
+const SeverityIcon = ({ severity }) => {
+  if (severity === 'error') return <AlertCircle className="w-3.5 h-3.5 text-[#dc2626] shrink-0 mt-0.5" />;
+  return <AlertTriangle className="w-3.5 h-3.5 text-[#ca8a04] shrink-0 mt-0.5" />;
+};
+
 const AnalyseDomain = () => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [recent, setRecent] = useState(() => readRecent());
+  const abortRef = useRef(null);
 
-  const runAnalysis = (rawUrl) => {
+  // Abort any in-flight request when unmounting
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  const runAnalysis = async (rawUrl) => {
     if (!isValidUrl(rawUrl)) {
       setError('Enter a valid URL (e.g. example.com)');
       return;
@@ -71,14 +88,14 @@ const AnalyseDomain = () => {
     setLoading(true);
     setResult(null);
 
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const startedAt = Date.now();
-
-    // Simulate latency so the loading state is visible
-    setTimeout(() => {
-      const r = analyzeDomain(rawUrl);
+    try {
+      const r = await analyzeDomain(rawUrl, { signal: controller.signal });
       setResult(r);
-      setLoading(false);
-
       const nextRecent = [
         { url: r.url, host: r.host, score: r.score, analyzedAt: r.analyzedAt },
         ...recent.filter((x) => x.url !== r.url)
@@ -90,11 +107,25 @@ const AnalyseDomain = () => {
         pendo.track('domain_analyzed', {
           host: r.host,
           score: r.score,
+          performanceScore: r.scores.performance,
+          accessibilityScore: r.scores.accessibility,
+          bestPracticesScore: r.scores.bestPractices,
           issueCount: r.issues.length,
           executionDurationMs: Date.now() - startedAt
         });
       }
-    }, 1200);
+    } catch (err) {
+      if (err.name === 'AbortError') return;
+      setError(err?.message || 'Failed to analyse this URL');
+      if (typeof pendo !== 'undefined') {
+        pendo.track('domain_analysis_failed', {
+          url: rawUrl.substring(0, 200),
+          error: err?.message?.substring(0, 200) || 'unknown'
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSubmit = (e) => {
@@ -103,6 +134,7 @@ const AnalyseDomain = () => {
   };
 
   const m = result?.metrics;
+  const s = result?.scores;
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-[6px] p-4 lg:p-6 border border-slate-200 dark:border-slate-700">
@@ -112,7 +144,7 @@ const AnalyseDomain = () => {
             Analyse Domain
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Enter a URL to get a quick SEO health check
+            Live SEO + Performance audit via Google PageSpeed Insights
           </p>
         </div>
         <Globe className="w-5 h-5 text-slate-400" />
@@ -147,7 +179,12 @@ const AnalyseDomain = () => {
         </button>
       </form>
 
-      {/* Recent analyses */}
+      {loading && (
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+          Running a real Lighthouse audit — this typically takes 10–30 seconds.
+        </p>
+      )}
+
       {recent.length > 0 && !result && !loading && (
         <div className="mt-4">
           <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-400 dark:text-slate-500 mb-2">
@@ -164,10 +201,7 @@ const AnalyseDomain = () => {
                 className="flex items-center space-x-2 px-2 py-1 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] hover:bg-slate-100 dark:hover:bg-slate-700"
               >
                 <span className="text-slate-700 dark:text-slate-200 truncate max-w-[160px]">{r.host}</span>
-                <span
-                  className="font-semibold"
-                  style={{ color: scoreColor(r.score) }}
-                >
+                <span className="font-semibold" style={{ color: scoreColor(r.score) }}>
                   {r.score}
                 </span>
               </button>
@@ -176,83 +210,42 @@ const AnalyseDomain = () => {
         </div>
       )}
 
-      {/* Results */}
       {result && (
         <div className="mt-5 space-y-4">
-          {/* Score header */}
-          <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px]">
-            <div className="min-w-0">
-              <p className="text-xs text-slate-500 dark:text-slate-400">SEO score for</p>
+          {/* Header with host + 4 score rings */}
+          <div className="space-y-3">
+            <div className="flex items-baseline justify-between gap-3">
               <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                 {result.host}
               </p>
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 shrink-0">
                 {new Date(result.analyzedAt).toLocaleString()}
               </p>
             </div>
-            <div className="flex items-baseline space-x-1 shrink-0">
-              <span
-                className="text-4xl font-bold"
-                style={{ color: scoreColor(result.score) }}
-              >
-                {result.score}
-              </span>
-              <span className="text-sm text-slate-400 dark:text-slate-500">/100</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <ScoreRing label="SEO" score={s.seo} />
+              <ScoreRing label="Performance" score={s.performance} />
+              <ScoreRing label="Accessibility" score={s.accessibility} />
+              <ScoreRing label="Best Practices" score={s.bestPractices} />
             </div>
           </div>
 
-          {/* Metrics grid */}
+          {/* Core Web Vitals + individual checks */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <Metric
-              icon={FileText}
-              label="Title length"
-              value={`${m.titleLength} chars`}
-              ok={m.titleLength >= 30 && m.titleLength <= 65}
-            />
-            <Metric
-              icon={FileText}
-              label="Meta description"
-              value={`${m.metaLength} chars`}
-              ok={m.metaLength >= 120 && m.metaLength <= 160}
-            />
-            <Metric icon={Code} label="H1 tags" value={m.h1Count} ok={m.h1Count === 1} />
-            <Metric
-              icon={FileText}
-              label="Word count"
-              value={m.wordCount}
-              ok={m.wordCount >= 300}
-            />
-            <Metric
-              icon={ImageIcon}
-              label="Images missing alt"
-              value={`${m.imagesMissingAlt} of ${m.imagesTotal}`}
-              ok={m.imagesMissingAlt === 0}
-            />
-            <Metric
-              icon={Zap}
-              label="Page speed"
-              value={`${m.speedScore}/100`}
-              ok={m.speedScore >= 75}
-            />
-            <Metric icon={Shield} label="HTTPS" value={m.https ? 'Yes' : 'No'} ok={m.https} />
-            <Metric
-              icon={Smartphone}
-              label="Mobile friendly"
-              value={m.mobileFriendly ? 'Yes' : 'No'}
-              ok={m.mobileFriendly}
-            />
-            <Metric
-              icon={Code}
-              label="sitemap.xml"
-              value={m.hasSitemap ? 'Found' : 'Missing'}
-              ok={m.hasSitemap}
-            />
-            <Metric
-              icon={Code}
-              label="robots.txt"
-              value={m.hasRobots ? 'Found' : 'Missing'}
-              ok={m.hasRobots}
-            />
+            {m.fcp && <Metric icon={Zap} label="First Contentful Paint" value={m.fcp} />}
+            {m.lcp && <Metric icon={Zap} label="Largest Contentful Paint" value={m.lcp} />}
+            {m.cls && <Metric icon={Zap} label="Cumulative Layout Shift" value={m.cls} />}
+            {m.tbt && <Metric icon={Zap} label="Total Blocking Time" value={m.tbt} />}
+            <Metric icon={FileText} label="Document title" value={m.title ? 'Pass' : 'Fail'} ok={m.title} />
+            <Metric icon={FileText} label="Meta description" value={m.metaDescription ? 'Pass' : 'Fail'} ok={m.metaDescription} />
+            <Metric icon={Shield} label="HTTPS" value={m.https ? 'Pass' : 'Fail'} ok={m.https} />
+            <Metric icon={Smartphone} label="Viewport" value={m.viewport ? 'Pass' : 'Fail'} ok={m.viewport} />
+            <Metric icon={Code} label="robots.txt" value={m.robots ? 'Pass' : 'Fail'} ok={m.robots} />
+            <Metric icon={LinkIcon} label="Canonical" value={m.canonical ? 'Pass' : 'Fail'} ok={m.canonical} />
+            <Metric icon={Eye} label="Image alt text" value={m.imageAlt ? 'Pass' : 'Fail'} ok={m.imageAlt} />
+            <Metric icon={LinkIcon} label="Link text" value={m.linkText ? 'Pass' : 'Fail'} ok={m.linkText} />
+            <Metric icon={Code} label="Structured data" value={m.structuredData ? 'Pass' : m.structuredData === false ? 'Fail' : 'Manual'} ok={m.structuredData} />
+            <Metric icon={Smartphone} label="Tap targets" value={m.tapTargets ? 'Pass' : 'Fail'} ok={m.tapTargets} />
           </div>
 
           {/* Issues */}
@@ -277,7 +270,12 @@ const AnalyseDomain = () => {
                     className="flex items-start space-x-2 p-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px]"
                   >
                     <SeverityIcon severity={issue.severity} />
-                    <span className="text-slate-700 dark:text-slate-200">{issue.text}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-slate-800 dark:text-slate-200">{issue.title}</p>
+                      {issue.description && (
+                        <p className="text-slate-500 dark:text-slate-400 mt-0.5">{issue.description}</p>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>
