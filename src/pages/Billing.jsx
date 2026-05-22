@@ -99,7 +99,9 @@ const Billing = () => {
                   setBillingCycle('monthly');
                   if (previousCycle !== 'monthly' && typeof pendo !== 'undefined') {
                     pendo.track('billing_cycle_changed', {
-                      newCycle: 'monthly'
+                      previousCycle: previousCycle,
+                      newCycle: 'monthly',
+                      currentPlan: plans.find(p => p.current)?.name || 'unknown'
                     });
                   }
                 }}
@@ -117,7 +119,9 @@ const Billing = () => {
                   setBillingCycle('yearly');
                   if (previousCycle !== 'yearly' && typeof pendo !== 'undefined') {
                     pendo.track('billing_cycle_changed', {
-                      newCycle: 'yearly'
+                      previousCycle: previousCycle,
+                      newCycle: 'yearly',
+                      currentPlan: plans.find(p => p.current)?.name || 'unknown'
                     });
                   }
                 }}
@@ -176,8 +180,11 @@ const Billing = () => {
                     if (!plan.current && typeof pendo !== 'undefined') {
                       const currentPlan = plans.find(p => p.current);
                       pendo.track('plan_upgraded', {
-                        planName: plan.name,
-                        billingCycle: billingCycle
+                        currentPlan: currentPlan?.name || 'unknown',
+                        selectedPlan: plan.name,
+                        billingCycle: billingCycle,
+                        previousPrice: currentPlan ? currentPlan.price[billingCycle] : 0,
+                        newPrice: plan.price[billingCycle]
                       });
                     }
                   }}

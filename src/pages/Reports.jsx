@@ -54,6 +54,8 @@ const Reports = () => {
               if (typeof pendo !== 'undefined') {
                 pendo.track('report_generated', {
                   reportType: 'new',
+                  reportTitle: 'Custom Report',
+                  reportId: String(Date.now()),
                   timestamp: new Date().toISOString()
                 });
               }
