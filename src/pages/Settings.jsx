@@ -255,7 +255,7 @@ const Settings = () => {
                     onClick={() => {
                       if (typeof pendo !== 'undefined') {
                         pendo.track('data_exported', {
-                          format: 'csv'
+                          exportFormat: 'csv'
                         });
                       }
                     }}
@@ -275,7 +275,8 @@ const Settings = () => {
                     onClick={() => {
                       if (typeof pendo !== 'undefined') {
                         pendo.track('account_deleted', {
-                          source: 'settings_preferences'
+                          source: 'settings_preferences',
+                          currentPlan: 'Pro'
                         });
                       }
                     }}
