@@ -15,7 +15,6 @@ import {
   Zap,
   Bell,
   Shield,
-  Globe,
   Lock,
   Trash2
 } from 'lucide-react';
