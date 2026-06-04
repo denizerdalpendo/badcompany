@@ -141,29 +141,53 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Receive updates about your account</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input type="checkbox" className="sr-only peer" defaultChecked onChange={(e) => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('notification_preferences_updated', {
+                          notificationType: 'email_notifications',
+                          enabled: e.target.checked,
+                          source: 'settings_notifications'
+                        });
+                      }
+                    }} />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                   <div>
                     <h3 className="font-medium text-slate-900 dark:text-slate-100">Report Ready Alerts</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Get notified when reports are generated</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input type="checkbox" className="sr-only peer" defaultChecked onChange={(e) => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('notification_preferences_updated', {
+                          notificationType: 'report_ready_alerts',
+                          enabled: e.target.checked,
+                          source: 'settings_notifications'
+                        });
+                      }
+                    }} />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg">
                   <div>
                     <h3 className="font-medium text-slate-900 dark:text-slate-100">API Usage Warnings</h3>
                     <p className="text-sm text-slate-600 dark:text-slate-400">Alert when approaching API limits</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input type="checkbox" className="sr-only peer" defaultChecked onChange={(e) => {
+                      if (typeof pendo !== 'undefined') {
+                        pendo.track('notification_preferences_updated', {
+                          notificationType: 'api_usage_warnings',
+                          enabled: e.target.checked,
+                          source: 'settings_notifications'
+                        });
+                      }
+                    }} />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
