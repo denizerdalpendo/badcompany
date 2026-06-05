@@ -138,6 +138,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
+    if (typeof pendo !== 'undefined') {
+      const sessionStart = session?.user?.created_at
+        ? new Date(session.user.created_at).getTime()
+        : null;
+      pendo.track('user_signed_out', {
+        sessionDurationMs: sessionStart ? Date.now() - sessionStart : 0
+      });
+    }
     writeSession(null);
     setSession(null);
   };

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Trash2, StickyNote, Search } from 'lucide-react';
 import Layout from '../components/Layout.jsx';
 import { useAuth } from '../auth/AuthContext.jsx';
@@ -59,6 +59,26 @@ const Notes = () => {
         n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
     );
   }, [notes, query]);
+
+  // Debounced tracking for notes search
+  const searchTimerRef = useRef(null);
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) return;
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      if (typeof pendo !== 'undefined') {
+        pendo.track('notes_searched', {
+          query: q.substring(0, 100),
+          resultsCount: filtered.length,
+          totalNotes: notes.length
+        });
+      }
+    }, 500);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [query, filtered.length, notes.length]);
 
   const activeNote = useMemo(
     () => notes.find((n) => n.id === activeId) || null,
