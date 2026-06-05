@@ -10,6 +10,9 @@ import {
   removeNote
 } from '../notes/notesStore.js';
 
+// Debounce timer for note_updated tracking to avoid firing on every keystroke
+let noteUpdateTimer = null;
+
 const formatTime = (iso) => {
   if (!iso) return '';
   try {
@@ -76,7 +79,21 @@ const Notes = () => {
 
   const handleUpdate = (patch) => {
     if (!activeNote) return;
-    setNotes((prev) => upsertNote(prev, { ...activeNote, ...patch }));
+    const updated = { ...activeNote, ...patch };
+    setNotes((prev) => upsertNote(prev, updated));
+
+    // Debounced pendo tracking — fires once after 1s of inactivity
+    if (noteUpdateTimer) clearTimeout(noteUpdateTimer);
+    noteUpdateTimer = setTimeout(() => {
+      if (typeof pendo !== 'undefined') {
+        pendo.track('note_updated', {
+          noteId: updated.id,
+          fieldUpdated: Object.keys(patch).join(','),
+          titleLength: (updated.title || '').length,
+          bodyLength: (updated.body || '').length
+        });
+      }
+    }, 1000);
   };
 
   const handleDelete = (id) => {
