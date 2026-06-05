@@ -60,6 +60,22 @@ const Notes = () => {
     );
   }, [notes, query]);
 
+  // Track notes search with debounce
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) return;
+    const timer = setTimeout(() => {
+      if (typeof pendo !== 'undefined') {
+        pendo.track('notes_searched', {
+          query: q.substring(0, 100),
+          resultsCount: filtered.length,
+          totalNotes: notes.length
+        });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query, filtered.length, notes.length]);
+
   const activeNote = useMemo(
     () => notes.find((n) => n.id === activeId) || null,
     [notes, activeId]

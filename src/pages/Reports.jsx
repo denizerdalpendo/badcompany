@@ -226,7 +226,17 @@ const Reports = () => {
             <Calendar className="w-4 h-4 text-slate-500" />
             <select
               value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setDateFilter(value);
+                if (typeof pendo !== 'undefined') {
+                  pendo.track('report_filtered', {
+                    filterType: 'date_range',
+                    filterValue: value,
+                    resultsCount: (value === dateFilter ? filteredReports : reports).length
+                  });
+                }
+              }}
               className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] px-3 py-2 text-sm"
             >
               <option>Last 30 days</option>
@@ -238,7 +248,18 @@ const Reports = () => {
             <Filter className="w-4 h-4 text-slate-500" />
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                setTypeFilter(value);
+                if (typeof pendo !== 'undefined') {
+                  const newFiltered = value === 'All Types' ? reports : reports.filter((r) => r.type === value);
+                  pendo.track('report_filtered', {
+                    filterType: 'report_type',
+                    filterValue: value,
+                    resultsCount: newFiltered.length
+                  });
+                }
+              }}
               className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] px-3 py-2 text-sm"
             >
               <option>All Types</option>
