@@ -140,6 +140,9 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     writeSession(null);
     setSession(null);
+    if (typeof pendo !== 'undefined' && typeof pendo.clearSession === 'function') {
+      pendo.clearSession();
+    }
   };
 
   const value = useMemo(
