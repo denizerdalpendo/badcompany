@@ -1,7 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-const StatsCard = ({ title, value, subtitle, icon: Icon, color = 'violet', progress, trend }) => {
+const StatsCard = ({ title, value, subtitle, subtitleLink, icon: Icon, color = 'violet', progress, trend }) => {
   const colorClasses = {
     violet: 'from-violet-600 to-indigo-500',
     blue: 'from-blue-600 to-cyan-500',
@@ -21,7 +22,21 @@ const StatsCard = ({ title, value, subtitle, icon: Icon, color = 'violet', progr
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">{title}</p>
           <p className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">{value}</p>
           {subtitle && (
-            <p className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
+            subtitleLink ? (
+              <Link
+                to={subtitleLink}
+                onClick={() => {
+                  if (typeof pendo !== 'undefined') {
+                    pendo.track('upgrade_cta_clicked', { source: 'dashboard_stats_card', currentPlan: value });
+                  }
+                }}
+                className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 underline cursor-pointer"
+              >
+                {subtitle}
+              </Link>
+            ) : (
+              <p className="text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
+            )
           )}
           
           {progress !== undefined && (

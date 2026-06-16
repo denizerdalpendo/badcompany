@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Link, FileText, BarChart3, RefreshCw } from 'lucide-react';
+import { Search, Link, FileText, BarChart3 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 const RecentActivity = () => {
+  const navigate = useNavigate();
   const activities = [
     {
       id: 1,
@@ -60,7 +62,15 @@ const RecentActivity = () => {
     <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Recent Activity</h2>
-        <button className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium">
+        <button
+          onClick={() => {
+            if (typeof pendo !== 'undefined') {
+              pendo.track('view_all_activity_clicked', { source: 'dashboard' });
+            }
+            navigate('/reports');
+          }}
+          className="text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium"
+        >
           View All
         </button>
       </div>
@@ -95,9 +105,6 @@ const RecentActivity = () => {
               </p>
             </div>
 
-            <button className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all">
-              <RefreshCw className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-            </button>
           </motion.div>
         ))}
       </div>

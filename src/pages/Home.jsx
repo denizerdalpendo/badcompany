@@ -255,6 +255,7 @@ const Home = () => {
             title="Current Plan"
             value="Pro"
             subtitle="Upgrade to Enterprise"
+            subtitleLink="/billing"
             icon={CreditCard}
             color="orange"
           />

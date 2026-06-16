@@ -52,17 +52,33 @@ const Topbar = ({ onMenuClick }) => {
     return () => document.removeEventListener('keydown', onKey);
   }, []);
 
-  const notifications = [
-    { id: 1, text: 'API usage at 80% of monthly limit', time: '2 hours ago', type: 'warning' },
-    { id: 2, text: 'New feature: Bulk keyword analysis', time: '1 day ago', type: 'info' },
-    { id: 3, text: 'Monthly report ready for download', time: '2 days ago', type: 'success' }
+  const notificationData = [
+    { id: 1, text: 'API usage at 80% of monthly limit', time: '2 hours ago', type: 'warning', path: '/billing' },
+    { id: 2, text: 'New feature: Bulk keyword analysis', time: '1 day ago', type: 'info', path: '/tools' },
+    { id: 3, text: 'Monthly report ready for download', time: '2 days ago', type: 'success', path: '/reports' }
   ];
+
+  const [readNotifications, setReadNotifications] = useState(new Set());
 
   const themeOptions = [
     { id: 'light', label: 'Light', icon: Sun },
     { id: 'dark', label: 'Dark', icon: Moon },
     { id: 'system', label: 'System', icon: Monitor }
   ];
+
+  const unreadCount = notificationData.filter((n) => !readNotifications.has(n.id)).length;
+
+  const handleNotificationClick = (notification) => {
+    setReadNotifications((prev) => new Set(prev).add(notification.id));
+    setShowNotifications(false);
+    if (typeof pendo !== 'undefined') {
+      pendo.track('notification_clicked', {
+        notificationId: notification.id,
+        notificationType: notification.type
+      });
+    }
+    navigate(notification.path);
+  };
 
   const handleThemeChange = (next) => {
     setTheme(next);
@@ -246,7 +262,9 @@ const Topbar = ({ onMenuClick }) => {
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              )}
             </button>
 
             {showNotifications && (
@@ -255,12 +273,21 @@ const Topbar = ({ onMenuClick }) => {
                   <h3 className="font-semibold text-slate-900 dark:text-slate-100">Notifications</h3>
                 </div>
                 <div className="max-h-64 overflow-y-auto">
-                  {notifications.map((notification) => (
-                    <div key={notification.id} className="p-4 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700">
-                      <p className="text-sm text-slate-900 dark:text-slate-100 mb-1">{notification.text}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{notification.time}</p>
-                    </div>
-                  ))}
+                  {notificationData.map((notification) => {
+                    const isRead = readNotifications.has(notification.id);
+                    return (
+                      <button
+                        key={notification.id}
+                        onClick={() => handleNotificationClick(notification)}
+                        className={`w-full text-left p-4 border-b border-slate-100 dark:border-slate-700 last:border-b-0 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+                          isRead ? 'opacity-60' : ''
+                        }`}
+                      >
+                        <p className="text-sm text-slate-900 dark:text-slate-100 mb-1">{notification.text}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{notification.time}</p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
