@@ -238,7 +238,21 @@ const Reports = () => {
             <Filter className="w-4 h-4 text-slate-500" />
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
+              onChange={(e) => {
+                const newFilter = e.target.value;
+                setTypeFilter(newFilter);
+                if (typeof pendo !== 'undefined') {
+                  const newFilteredCount = newFilter === 'All Types'
+                    ? reports.length
+                    : reports.filter((r) => r.type === newFilter).length;
+                  pendo.track('report_filtered', {
+                    filterType: newFilter,
+                    dateFilter: dateFilter,
+                    filteredResultsCount: newFilteredCount,
+                    totalReportCount: reports.length
+                  });
+                }
+              }}
               className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] px-3 py-2 text-sm"
             >
               <option>All Types</option>

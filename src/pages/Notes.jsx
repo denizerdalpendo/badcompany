@@ -125,6 +125,15 @@ const Notes = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onBlur={() => {
+                    if (query.trim() && typeof pendo !== 'undefined') {
+                      pendo.track('notes_searched', {
+                        query: query.trim().substring(0, 100),
+                        resultsCount: filtered.length,
+                        totalNoteCount: notes.length
+                      });
+                    }
+                  }}
                   placeholder="Search notes"
                   className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
