@@ -12,6 +12,11 @@ const initialProfile = {
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [profile, setProfile] = useState(initialProfile);
+  const [notifications, setNotifications] = useState({
+    emailNotifications: true,
+    reportReadyAlerts: true,
+    apiUsageWarnings: true
+  });
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
@@ -141,7 +146,24 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Receive updates about your account</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={notifications.emailNotifications}
+                      onChange={(e) => {
+                        const enabled = e.target.checked;
+                        setNotifications(prev => ({ ...prev, emailNotifications: enabled }));
+                        if (typeof pendo !== 'undefined') {
+                          pendo.track('notification_preferences_updated', {
+                            preferenceName: 'emailNotifications',
+                            enabled: enabled,
+                            emailNotifications: enabled,
+                            reportReadyAlerts: notifications.reportReadyAlerts,
+                            apiUsageWarnings: notifications.apiUsageWarnings
+                          });
+                        }
+                      }}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
@@ -152,7 +174,24 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Get notified when reports are generated</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={notifications.reportReadyAlerts}
+                      onChange={(e) => {
+                        const enabled = e.target.checked;
+                        setNotifications(prev => ({ ...prev, reportReadyAlerts: enabled }));
+                        if (typeof pendo !== 'undefined') {
+                          pendo.track('notification_preferences_updated', {
+                            preferenceName: 'reportReadyAlerts',
+                            enabled: enabled,
+                            emailNotifications: notifications.emailNotifications,
+                            reportReadyAlerts: enabled,
+                            apiUsageWarnings: notifications.apiUsageWarnings
+                          });
+                        }
+                      }}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
@@ -163,7 +202,24 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Alert when approaching API limits</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={notifications.apiUsageWarnings}
+                      onChange={(e) => {
+                        const enabled = e.target.checked;
+                        setNotifications(prev => ({ ...prev, apiUsageWarnings: enabled }));
+                        if (typeof pendo !== 'undefined') {
+                          pendo.track('notification_preferences_updated', {
+                            preferenceName: 'apiUsageWarnings',
+                            enabled: enabled,
+                            emailNotifications: notifications.emailNotifications,
+                            reportReadyAlerts: notifications.reportReadyAlerts,
+                            apiUsageWarnings: enabled
+                          });
+                        }
+                      }}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
