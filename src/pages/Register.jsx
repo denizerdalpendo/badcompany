@@ -1,44 +1,53 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Mail, Lock, User, Loader2 } from 'lucide-react';
-import { useAuth } from '../auth/AuthContext.jsx';
-import Logo from '../components/Logo.jsx';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Mail, Lock, User, Loader2 } from "lucide-react";
+import { useAuth } from "../auth/AuthContext.jsx";
+import Logo from "../components/Logo.jsx";
 
 const Register = () => {
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error("Password must be at least 6 characters");
       return;
     }
     if (password !== confirm) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
     setSubmitting(true);
     try {
       const { session } = await signUp({ email, password, fullName });
-      if (typeof pendo !== 'undefined') {
-        pendo.track('user_signed_up', { method: 'email_password' });
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_signed_up", { method: "email_password" });
       }
       if (session) {
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
       } else {
-        toast.success('Account created — check your email to confirm.');
-        navigate('/login', { replace: true });
+        toast.success("Account created — check your email to confirm.");
+        navigate("/login", { replace: true });
       }
     } catch (err) {
-      toast.error(err?.message || 'Failed to create account');
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_sign_up_failed", {
+          method: "email_password",
+          errorMessage: (err?.message || "Failed to create account").substring(
+            0,
+            100,
+          ),
+        });
+      }
+      toast.error(err?.message || "Failed to create account");
     } finally {
       setSubmitting(false);
     }
@@ -51,7 +60,9 @@ const Register = () => {
           <div className="flex justify-center mb-4">
             <Logo size="lg" showName={false} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Join Bad Company</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Join Bad Company
+          </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Create your account in under a minute
           </p>
@@ -134,13 +145,20 @@ const Register = () => {
             disabled={submitting}
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-2.5 rounded-lg font-medium hover:from-violet-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
+            {submitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
 
         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+          >
             Sign in
           </Link>
         </p>
