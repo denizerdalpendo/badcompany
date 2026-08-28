@@ -38,6 +38,12 @@ const Register = () => {
         navigate('/login', { replace: true });
       }
     } catch (err) {
+      if (typeof pendo !== 'undefined') {
+        pendo.track('sign_up_failed', {
+          errorMessage: (err?.message || 'unknown').substring(0, 200),
+          method: 'email_password',
+        });
+      }
       toast.error(err?.message || 'Failed to create account');
     } finally {
       setSubmitting(false);
@@ -51,7 +57,9 @@ const Register = () => {
           <div className="flex justify-center mb-4">
             <Logo size="lg" showName={false} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Join Bad Company</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Join Bad Company
+          </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Create your account in under a minute
           </p>
@@ -134,13 +142,20 @@ const Register = () => {
             disabled={submitting}
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-2.5 rounded-lg font-medium hover:from-violet-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
+            {submitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              'Create Account'
+            )}
           </button>
         </form>
 
         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mt-6">
           Already have an account?{' '}
-          <Link to="/login" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+          <Link
+            to="/login"
+            className="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+          >
             Sign in
           </Link>
         </p>
