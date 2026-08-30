@@ -1,43 +1,43 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Plus, Trash2, StickyNote, Search } from 'lucide-react';
-import Layout from '../components/Layout.jsx';
-import { useAuth } from '../auth/AuthContext.jsx';
+import React, { useEffect, useMemo, useState } from "react";
+import { Plus, Trash2, StickyNote, Search } from "lucide-react";
+import Layout from "../components/Layout.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
 import {
   readNotes,
   writeNotes,
   newNote,
   upsertNote,
-  removeNote
-} from '../notes/notesStore.js';
+  removeNote,
+} from "../notes/notesStore.js";
 
 const formatTime = (iso) => {
-  if (!iso) return '';
+  if (!iso) return "";
   try {
     const d = new Date(iso);
     const now = new Date();
     const sameDay = d.toDateString() === now.toDateString();
     return sameDay
-      ? d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
-      : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      ? d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" })
+      : d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   } catch {
-    return '';
+    return "";
   }
 };
 
-const titlePreview = (note) => note.title?.trim() || 'Untitled';
+const titlePreview = (note) => note.title?.trim() || "Untitled";
 const bodyPreview = (note) =>
-  (note.body || '')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .slice(0, 80) || 'No additional text';
+  (note.body || "").trim().replace(/\s+/g, " ").slice(0, 80) ||
+  "No additional text";
 
 const Notes = () => {
   const { user } = useAuth();
   const userId = user?.id;
 
   const [notes, setNotes] = useState(() => readNotes(userId));
-  const [activeId, setActiveId] = useState(() => readNotes(userId)[0]?.id || null);
-  const [query, setQuery] = useState('');
+  const [activeId, setActiveId] = useState(
+    () => readNotes(userId)[0]?.id || null,
+  );
+  const [query, setQuery] = useState("");
 
   // If the user changes (sign out / sign in in another tab), reload notes
   useEffect(() => {
@@ -56,21 +56,24 @@ const Notes = () => {
     if (!q) return notes;
     return notes.filter(
       (n) =>
-        n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
+        n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q),
     );
   }, [notes, query]);
 
   const activeNote = useMemo(
     () => notes.find((n) => n.id === activeId) || null,
-    [notes, activeId]
+    [notes, activeId],
   );
 
   const handleCreate = () => {
     const fresh = newNote();
     setNotes((prev) => [fresh, ...prev]);
     setActiveId(fresh.id);
-    if (typeof pendo !== 'undefined') {
-      pendo.track('note_created', { source: 'notes_page' });
+    if (typeof pendo !== "undefined") {
+      pendo.track("note_created", {
+        source: "notes_page",
+        totalNoteCount: notes.length + 1,
+      });
     }
   };
 
@@ -87,8 +90,11 @@ const Notes = () => {
       }
       return next;
     });
-    if (typeof pendo !== 'undefined') {
-      pendo.track('note_deleted', { noteId: id });
+    if (typeof pendo !== "undefined") {
+      pendo.track("note_deleted", {
+        noteId: id,
+        remainingNoteCount: notes.length - 1,
+      });
     }
   };
 
@@ -125,6 +131,15 @@ const Notes = () => {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
+                  onBlur={() => {
+                    if (query.trim() && typeof pendo !== 'undefined') {
+                      pendo.track('notes_searched', {
+                        query: query.trim().substring(0, 100),
+                        resultsCount: filtered.length,
+                        totalNoteCount: notes.length
+                      });
+                    }
+                  }}
                   placeholder="Search notes"
                   className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
@@ -135,8 +150,8 @@ const Notes = () => {
               {filtered.length === 0 && (
                 <li className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
                   {notes.length === 0
-                    ? 'No notes yet — create your first one.'
-                    : 'No notes match this search.'}
+                    ? "No notes yet — create your first one."
+                    : "No notes match this search."}
                 </li>
               )}
               {filtered.map((note) => {
@@ -147,8 +162,8 @@ const Notes = () => {
                       onClick={() => setActiveId(note.id)}
                       className={`w-full text-left p-3 border-b border-slate-100 dark:border-slate-700/60 transition-colors ${
                         isActive
-                          ? 'bg-slate-100 dark:bg-slate-700'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-700/60'
+                          ? "bg-slate-100 dark:bg-slate-700"
+                          : "hover:bg-slate-50 dark:hover:bg-slate-700/60"
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
