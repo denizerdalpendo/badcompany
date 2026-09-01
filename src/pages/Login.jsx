@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Mail, Lock, Loader2 } from 'lucide-react';
-import { useAuth } from '../auth/AuthContext.jsx';
-import Logo from '../components/Logo.jsx';
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Mail, Lock, Loader2 } from "lucide-react";
+import { useAuth } from "../auth/AuthContext.jsx";
+import Logo from "../components/Logo.jsx";
 
 const Login = () => {
   const { signIn } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from?.pathname || '/';
+  const redirectTo = location.state?.from?.pathname || "/";
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const onSubmit = async (e) => {
@@ -21,12 +21,18 @@ const Login = () => {
     setSubmitting(true);
     try {
       await signIn({ email, password });
-      if (typeof pendo !== 'undefined') {
-        pendo.track('user_signed_in', { method: 'email_password' });
+      if (typeof pendo !== "undefined") {
+        pendo.track("user_signed_in", { method: "email_password" });
       }
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      toast.error(err?.message || 'Failed to sign in');
+      if (typeof pendo !== "undefined") {
+        pendo.track("sign_in_failed", {
+          method: "email_password",
+          errorMessage: err?.message?.substring(0, 200) || "unknown",
+        });
+      }
+      toast.error(err?.message || "Failed to sign in");
     } finally {
       setSubmitting(false);
     }
@@ -39,7 +45,9 @@ const Login = () => {
           <div className="flex justify-center mb-4">
             <Logo size="lg" showName={false} />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Welcome to Bad Company</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            Welcome to Bad Company
+          </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Sign in to your account to continue
           </p>
@@ -87,13 +95,20 @@ const Login = () => {
             disabled={submitting}
             className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-2.5 rounded-lg font-medium hover:from-violet-700 hover:to-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sign In'}
+            {submitting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 
         <p className="text-sm text-center text-slate-500 dark:text-slate-400 mt-6">
-          Don&rsquo;t have an account?{' '}
-          <Link to="/register" className="text-violet-600 dark:text-violet-400 font-medium hover:underline">
+          Don&rsquo;t have an account?{" "}
+          <Link
+            to="/register"
+            className="text-violet-600 dark:text-violet-400 font-medium hover:underline"
+          >
             Create one
           </Link>
         </p>
