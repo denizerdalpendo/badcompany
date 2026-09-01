@@ -7,7 +7,7 @@ import {
   writeNotes,
   newNote,
   upsertNote,
-  removeNote
+  removeNote,
 } from '../notes/notesStore.js';
 
 const formatTime = (iso) => {
@@ -26,17 +26,17 @@ const formatTime = (iso) => {
 
 const titlePreview = (note) => note.title?.trim() || 'Untitled';
 const bodyPreview = (note) =>
-  (note.body || '')
-    .trim()
-    .replace(/\s+/g, ' ')
-    .slice(0, 80) || 'No additional text';
+  (note.body || '').trim().replace(/\s+/g, ' ').slice(0, 80) ||
+  'No additional text';
 
 const Notes = () => {
   const { user } = useAuth();
   const userId = user?.id;
 
   const [notes, setNotes] = useState(() => readNotes(userId));
-  const [activeId, setActiveId] = useState(() => readNotes(userId)[0]?.id || null);
+  const [activeId, setActiveId] = useState(
+    () => readNotes(userId)[0]?.id || null,
+  );
   const [query, setQuery] = useState('');
 
   // If the user changes (sign out / sign in in another tab), reload notes
@@ -56,13 +56,13 @@ const Notes = () => {
     if (!q) return notes;
     return notes.filter(
       (n) =>
-        n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
+        n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q),
     );
   }, [notes, query]);
 
   const activeNote = useMemo(
     () => notes.find((n) => n.id === activeId) || null,
-    [notes, activeId]
+    [notes, activeId],
   );
 
   const handleCreate = () => {
@@ -70,7 +70,10 @@ const Notes = () => {
     setNotes((prev) => [fresh, ...prev]);
     setActiveId(fresh.id);
     if (typeof pendo !== 'undefined') {
-      pendo.track('note_created', { source: 'notes_page' });
+      pendo.track('note_created', {
+        source: 'notes_page',
+        existingNoteCount: notes.length,
+      });
     }
   };
 
@@ -88,7 +91,10 @@ const Notes = () => {
       return next;
     });
     if (typeof pendo !== 'undefined') {
-      pendo.track('note_deleted', { noteId: id });
+      pendo.track('note_deleted', {
+        noteId: id,
+        remainingNoteCount: notes.length - 1,
+      });
     }
   };
 
