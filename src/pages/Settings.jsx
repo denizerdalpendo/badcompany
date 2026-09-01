@@ -170,14 +170,18 @@ const Settings = () => {
                       checked={notifications.emailNotifications}
                       onChange={(e) => {
                         const enabled = e.target.checked;
-                        setNotifications((prev) => ({
-                          ...prev,
+                        const updated = {
+                          ...notifications,
                           emailNotifications: enabled,
-                        }));
+                        };
+                        setNotifications(updated);
                         if (typeof pendo !== "undefined") {
                           pendo.track("notification_preferences_updated", {
                             notificationType: "email_notifications",
                             enabled: enabled,
+                            emailNotifications: updated.emailNotifications,
+                            reportReadyAlerts: updated.reportReadyAlerts,
+                            apiUsageWarnings: updated.apiUsageWarnings,
                           });
                         }
                       }}
@@ -202,14 +206,18 @@ const Settings = () => {
                       checked={notifications.reportReadyAlerts}
                       onChange={(e) => {
                         const enabled = e.target.checked;
-                        setNotifications((prev) => ({
-                          ...prev,
+                        const updated = {
+                          ...notifications,
                           reportReadyAlerts: enabled,
-                        }));
+                        };
+                        setNotifications(updated);
                         if (typeof pendo !== "undefined") {
                           pendo.track("notification_preferences_updated", {
                             notificationType: "report_ready_alerts",
                             enabled: enabled,
+                            emailNotifications: updated.emailNotifications,
+                            reportReadyAlerts: updated.reportReadyAlerts,
+                            apiUsageWarnings: updated.apiUsageWarnings,
                           });
                         }
                       }}
@@ -234,14 +242,18 @@ const Settings = () => {
                       checked={notifications.apiUsageWarnings}
                       onChange={(e) => {
                         const enabled = e.target.checked;
-                        setNotifications((prev) => ({
-                          ...prev,
+                        const updated = {
+                          ...notifications,
                           apiUsageWarnings: enabled,
-                        }));
+                        };
+                        setNotifications(updated);
                         if (typeof pendo !== "undefined") {
                           pendo.track("notification_preferences_updated", {
                             notificationType: "api_usage_warnings",
                             enabled: enabled,
+                            emailNotifications: updated.emailNotifications,
+                            reportReadyAlerts: updated.reportReadyAlerts,
+                            apiUsageWarnings: updated.apiUsageWarnings,
                           });
                         }
                       }}
