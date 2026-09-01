@@ -236,7 +236,8 @@ const AccountSettings = () => {
             onClick={() => {
               if (typeof pendo !== 'undefined') {
                 pendo.track('account_deleted', {
-                  source: 'account_settings'
+                  source: 'account_settings',
+                  currentPlan: 'Pro'
                 });
               }
             }}
