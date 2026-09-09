@@ -55,6 +55,7 @@ const identifyPendo = (user) => {
       id: user.email,
       email: user.email,
       full_name: user.user_metadata?.full_name || '',
+      role: user.user_metadata?.role || '',
       account
     },
     account: {
@@ -88,7 +89,7 @@ export const AuthProvider = ({ children }) => {
     identifyPendo(session?.user ?? null);
   }, [session]);
 
-  const signUp = async ({ email, password, fullName }) => {
+  const signUp = async ({ email, password, fullName, role }) => {
     const normalized = (email || '').trim().toLowerCase();
     if (!normalized) throw new Error('Email is required');
     if (!password || password.length < 6) {
@@ -109,6 +110,7 @@ export const AuthProvider = ({ children }) => {
       password,
       user_metadata: {
         full_name: fullName || '',
+        role: role || '',
         account: accountFromEmail(normalized)
       },
       created_at: new Date().toISOString()
