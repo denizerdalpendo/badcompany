@@ -11,6 +11,7 @@ const Register = () => {
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -27,7 +28,7 @@ const Register = () => {
     }
     setSubmitting(true);
     try {
-      const { session } = await signUp({ email, password, fullName });
+      const { session } = await signUp({ email, password, fullName, role });
       if (typeof pendo !== 'undefined') {
         pendo.track('user_signed_up', { method: 'email_password' });
       }
@@ -91,6 +92,22 @@ const Register = () => {
                 className="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              Role
+            </label>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+            >
+              <option value="">Select a role…</option>
+              <option value="seo_professional">SEO Professional</option>
+              <option value="account_owner">Account Owner</option>
+              <option value="account_manager">Account Manager</option>
+            </select>
           </div>
 
           <div>
