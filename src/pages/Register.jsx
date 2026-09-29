@@ -38,6 +38,12 @@ const Register = () => {
         navigate('/login', { replace: true });
       }
     } catch (err) {
+      if (typeof pendo !== 'undefined') {
+        pendo.track('registration_failed', {
+          method: 'email_password',
+          errorMessage: (err?.message || 'unknown').substring(0, 200)
+        });
+      }
       toast.error(err?.message || 'Failed to create account');
     } finally {
       setSubmitting(false);
