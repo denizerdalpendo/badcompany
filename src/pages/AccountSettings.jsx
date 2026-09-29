@@ -215,7 +215,17 @@ const AccountSettings = () => {
                 Connected as {account.email}
               </p>
             </div>
-            <button className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg">
+            <button
+              onClick={() => {
+                if (typeof pendo !== 'undefined') {
+                  pendo.track('connected_account_disconnected', {
+                    provider: 'Google',
+                    connectedEmail: account.email
+                  });
+                }
+              }}
+              className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg"
+            >
               Disconnect
             </button>
           </div>
