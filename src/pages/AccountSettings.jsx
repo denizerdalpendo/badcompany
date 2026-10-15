@@ -7,12 +7,12 @@ const AccountSettings = () => {
     name: 'John Doe',
     email: 'john.doe@example.com',
     company: 'Acme Inc',
-    position: 'SEO Manager'
+    position: 'SEO Manager',
   });
   const [passwords, setPasswords] = useState({
     current: '',
     next: '',
-    confirm: ''
+    confirm: '',
   });
 
   return (
@@ -49,8 +49,12 @@ const AccountSettings = () => {
               </button>
             </div>
             <div>
-              <p className="font-medium text-slate-900 dark:text-slate-100">{account.name}</p>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{account.email}</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">
+                {account.name}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {account.email}
+              </p>
             </div>
           </div>
 
@@ -62,7 +66,9 @@ const AccountSettings = () => {
               <input
                 type="text"
                 value={account.name}
-                onChange={(e) => setAccount({ ...account, name: e.target.value })}
+                onChange={(e) =>
+                  setAccount({ ...account, name: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
@@ -73,7 +79,9 @@ const AccountSettings = () => {
               <input
                 type="email"
                 value={account.email}
-                onChange={(e) => setAccount({ ...account, email: e.target.value })}
+                onChange={(e) =>
+                  setAccount({ ...account, email: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
@@ -84,7 +92,9 @@ const AccountSettings = () => {
               <input
                 type="text"
                 value={account.company}
-                onChange={(e) => setAccount({ ...account, company: e.target.value })}
+                onChange={(e) =>
+                  setAccount({ ...account, company: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
@@ -95,7 +105,9 @@ const AccountSettings = () => {
               <input
                 type="text"
                 value={account.position}
-                onChange={(e) => setAccount({ ...account, position: e.target.value })}
+                onChange={(e) =>
+                  setAccount({ ...account, position: e.target.value })
+                }
                 className="w-full px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               />
             </div>
@@ -112,7 +124,7 @@ const AccountSettings = () => {
                     hasName: Boolean(account.name),
                     hasEmail: Boolean(account.email),
                     hasCompany: Boolean(account.company),
-                    hasPosition: Boolean(account.position)
+                    hasPosition: Boolean(account.position),
                   });
                 }
               }}
@@ -137,21 +149,27 @@ const AccountSettings = () => {
               type="password"
               placeholder="Current password"
               value={passwords.current}
-              onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+              onChange={(e) =>
+                setPasswords({ ...passwords, current: e.target.value })
+              }
               className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             />
             <input
               type="password"
               placeholder="New password"
               value={passwords.next}
-              onChange={(e) => setPasswords({ ...passwords, next: e.target.value })}
+              onChange={(e) =>
+                setPasswords({ ...passwords, next: e.target.value })
+              }
               className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             />
             <input
               type="password"
               placeholder="Confirm new password"
               value={passwords.confirm}
-              onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+              onChange={(e) =>
+                setPasswords({ ...passwords, confirm: e.target.value })
+              }
               className="px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
             />
           </div>
@@ -162,7 +180,7 @@ const AccountSettings = () => {
                 if (typeof pendo !== 'undefined') {
                   pendo.track('password_changed', {
                     success: true,
-                    source: 'account_settings'
+                    source: 'account_settings',
                   });
                 }
                 setPasswords({ current: '', next: '', confirm: '' });
@@ -185,7 +203,9 @@ const AccountSettings = () => {
 
           <div className="flex items-center justify-between p-4 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
             <div>
-              <p className="font-medium text-slate-900 dark:text-slate-100">Pro Plan</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">
+                Pro Plan
+              </p>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Renews on Jun 1, 2026 — $49/month
               </p>
@@ -210,7 +230,9 @@ const AccountSettings = () => {
 
           <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200 dark:border-slate-700">
             <div>
-              <p className="font-medium text-slate-900 dark:text-slate-100">Google</p>
+              <p className="font-medium text-slate-900 dark:text-slate-100">
+                Google
+              </p>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Connected as {account.email}
               </p>
@@ -230,13 +252,15 @@ const AccountSettings = () => {
             </h2>
           </div>
           <p className="text-sm text-red-700 dark:text-red-300 mb-4">
-            Permanently delete your account and all associated data. This action cannot be undone.
+            Permanently delete your account and all associated data. This action
+            cannot be undone.
           </p>
           <button
             onClick={() => {
               if (typeof pendo !== 'undefined') {
                 pendo.track('account_deleted', {
-                  source: 'account_settings'
+                  source: 'account_settings',
+                  currentPlan: 'Pro',
                 });
               }
             }}
