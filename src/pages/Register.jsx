@@ -15,14 +15,28 @@ const Register = () => {
   const [confirm, setConfirm] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Sign-up rejected by form validation or by signUp(). Never send the email here.
+  const trackSignUpFailed = (failureStage, failureReason) => {
+    if (typeof pendo !== 'undefined') {
+      pendo.track('sign_up_failed', {
+        method: 'email_password',
+        failureStage,
+        failureReason,
+        hasFullName: Boolean(fullName)
+      });
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 6) {
       toast.error('Password must be at least 6 characters');
+      trackSignUpFailed('client_validation', 'password_too_short');
       return;
     }
     if (password !== confirm) {
       toast.error('Passwords do not match');
+      trackSignUpFailed('client_validation', 'password_mismatch');
       return;
     }
     setSubmitting(true);
@@ -39,6 +53,7 @@ const Register = () => {
       }
     } catch (err) {
       toast.error(err?.message || 'Failed to create account');
+      trackSignUpFailed('account_creation', (err?.message || 'unknown').substring(0, 100));
     } finally {
       setSubmitting(false);
     }

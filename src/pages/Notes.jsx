@@ -31,6 +31,50 @@ const bodyPreview = (note) =>
     .replace(/\s+/g, ' ')
     .slice(0, 80) || 'No additional text';
 
+// note_saved is debounced to one event per burst of editing: it fires this long
+// after the last keystroke, or right away when the user switches, creates or
+// deletes a note, or leaves the page.
+const NOTE_SAVED_DEBOUNCE_MS = 2000;
+
+// Module-level (not refs) so they survive leaving and returning to /notes.
+const savedNoteIds = new Set(); // notes that already reported a note_saved
+let pendingNoteSave = null; // { noteId, isFirstSave, titleLength, bodyLength, totalNotes, timer }
+
+const flushNoteSaved = () => {
+  if (!pendingNoteSave) return;
+  const pending = pendingNoteSave;
+  pendingNoteSave = null;
+  clearTimeout(pending.timer);
+  savedNoteIds.add(pending.noteId);
+  if (typeof pendo !== 'undefined') {
+    pendo.track('note_saved', {
+      noteId: pending.noteId,
+      titleLength: pending.titleLength,
+      bodyLength: pending.bodyLength,
+      isFirstSave: pending.isFirstSave,
+      totalNotes: pending.totalNotes
+    });
+  }
+};
+
+const scheduleNoteSaved = (note, patch, totalNotes) => {
+  if (pendingNoteSave && pendingNoteSave.noteId !== note.id) flushNoteSaved();
+  if (pendingNoteSave) {
+    clearTimeout(pendingNoteSave.timer);
+  } else {
+    pendingNoteSave = {
+      noteId: note.id,
+      // True for the first text typed into a blank note
+      isFirstSave: !savedNoteIds.has(note.id) && !note.title && !note.body
+    };
+  }
+  const next = { ...note, ...patch };
+  pendingNoteSave.titleLength = (next.title || '').length;
+  pendingNoteSave.bodyLength = (next.body || '').length;
+  pendingNoteSave.totalNotes = totalNotes;
+  pendingNoteSave.timer = setTimeout(flushNoteSaved, NOTE_SAVED_DEBOUNCE_MS);
+};
+
 const Notes = () => {
   const { user } = useAuth();
   const userId = user?.id;
@@ -51,6 +95,9 @@ const Notes = () => {
     writeNotes(userId, notes);
   }, [notes, userId]);
 
+  // Send a pending note_saved as soon as the active note changes or the page unmounts
+  useEffect(() => () => flushNoteSaved(), [activeId]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return notes;
@@ -66,6 +113,7 @@ const Notes = () => {
   );
 
   const handleCreate = () => {
+    flushNoteSaved(); // report the previous note's edits before note_created
     const fresh = newNote();
     setNotes((prev) => [fresh, ...prev]);
     setActiveId(fresh.id);
@@ -77,9 +125,11 @@ const Notes = () => {
   const handleUpdate = (patch) => {
     if (!activeNote) return;
     setNotes((prev) => upsertNote(prev, { ...activeNote, ...patch }));
+    scheduleNoteSaved(activeNote, patch, notes.length);
   };
 
   const handleDelete = (id) => {
+    flushNoteSaved(); // report this note's edits before note_deleted
     setNotes((prev) => {
       const next = removeNote(prev, id);
       if (id === activeId) {

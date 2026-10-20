@@ -20,6 +20,17 @@ const Settings = () => {
     { id: 'preferences', label: 'Preferences', icon: Globe }
   ];
 
+  // Notification toggle flipped; `enabled` is the new on/off state
+  const handleNotificationChange = (preferenceName, enabled) => {
+    if (typeof pendo !== 'undefined') {
+      pendo.track('notification_preference_changed', {
+        preferenceName,
+        enabled,
+        source: 'settings_notifications'
+      });
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-4xl mx-auto space-y-8">
@@ -141,7 +152,12 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Receive updates about your account</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      defaultChecked
+                      onChange={(e) => handleNotificationChange('email_notifications', e.target.checked)}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
@@ -152,7 +168,12 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Get notified when reports are generated</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      defaultChecked
+                      onChange={(e) => handleNotificationChange('report_ready_alerts', e.target.checked)}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>
@@ -163,7 +184,12 @@ const Settings = () => {
                     <p className="text-sm text-slate-600 dark:text-slate-400">Alert when approaching API limits</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      defaultChecked
+                      onChange={(e) => handleNotificationChange('api_usage_warnings', e.target.checked)}
+                    />
                     <div className="w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-600"></div>
                   </label>
                 </div>

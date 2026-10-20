@@ -27,6 +27,14 @@ const Login = () => {
       navigate(redirectTo, { replace: true });
     } catch (err) {
       toast.error(err?.message || 'Failed to sign in');
+      // Sign-in rejected (e.g. bad credentials). Never send the email here.
+      if (typeof pendo !== 'undefined') {
+        pendo.track('sign_in_failed', {
+          method: 'email_password',
+          failureReason: (err?.message || 'unknown').substring(0, 100),
+          redirectTo: redirectTo.substring(0, 100)
+        });
+      }
     } finally {
       setSubmitting(false);
     }
