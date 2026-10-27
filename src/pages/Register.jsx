@@ -15,13 +15,26 @@ const Register = () => {
   const [confirm, setConfirm] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Track failed registration attempts (no email/PII is sent)
+  const trackSignUpFailed = (failureReason, errorMessage) => {
+    if (typeof pendo !== 'undefined') {
+      pendo.track('user_sign_up_failed', {
+        method: 'email_password',
+        failureReason,
+        errorMessage: (errorMessage || 'unknown').substring(0, 200)
+      });
+    }
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     if (password.length < 6) {
+      trackSignUpFailed('password_too_short', 'Password must be at least 6 characters');
       toast.error('Password must be at least 6 characters');
       return;
     }
     if (password !== confirm) {
+      trackSignUpFailed('password_mismatch', 'Passwords do not match');
       toast.error('Passwords do not match');
       return;
     }
@@ -38,6 +51,7 @@ const Register = () => {
         navigate('/login', { replace: true });
       }
     } catch (err) {
+      trackSignUpFailed('sign_up_error', err?.message);
       toast.error(err?.message || 'Failed to create account');
     } finally {
       setSubmitting(false);
