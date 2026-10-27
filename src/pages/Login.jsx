@@ -26,6 +26,13 @@ const Login = () => {
       }
       navigate(redirectTo, { replace: true });
     } catch (err) {
+      // Track failed sign-in attempts (no email/PII is sent)
+      if (typeof pendo !== 'undefined') {
+        pendo.track('user_sign_in_failed', {
+          method: 'email_password',
+          errorMessage: (err?.message || 'unknown').substring(0, 200)
+        });
+      }
       toast.error(err?.message || 'Failed to sign in');
     } finally {
       setSubmitting(false);
