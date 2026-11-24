@@ -25,6 +25,7 @@ const Support = () => {
   const supportOptions = [
     {
       icon: MessageSquare,
+      id: 'live-chat',
       title: 'Live Chat',
       description: 'Get instant help from our support team',
       responseTime: 'Typically replies in 2 minutes',
@@ -32,6 +33,7 @@ const Support = () => {
     },
     {
       icon: Mail,
+      id: 'email-support',
       title: 'Email Support',
       description: 'Send us a detailed message',
       responseTime: 'Typically replies within 4 hours',
@@ -39,6 +41,7 @@ const Support = () => {
     },
     {
       icon: Clock,
+      id: 'knowledge-base',
       title: 'Knowledge Base',
       description: 'Browse our comprehensive guides',
       responseTime: 'Available 24/7',
@@ -78,7 +81,10 @@ const Support = () => {
                 )}
               </div>
               
-              <button className="w-full mt-4 bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-violet-700 hover:to-indigo-600 transition-all">
+              <button
+                id={`support-get-help-${option.id}`}
+                className="w-full mt-4 bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-2 px-4 rounded-lg text-sm font-medium hover:from-violet-700 hover:to-indigo-600 transition-all"
+              >
                 Get Help
               </button>
             </div>
@@ -169,6 +175,7 @@ const Support = () => {
             </div>
 
             <button
+              id="support-send-message"
               type="submit"
               className="w-full bg-gradient-to-r from-violet-600 to-indigo-500 text-white py-3 px-4 rounded-xl font-medium hover:from-violet-700 hover:to-indigo-600 transition-all"
             >
